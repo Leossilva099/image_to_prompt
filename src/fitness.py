@@ -5,24 +5,30 @@ from transformers import CLIPModel, CLIPProcessor
 
 
 def load_clip(device):
-    model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14").to(device)
-    processor = CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
+    model=CLIPModel.from_pretrained("openai/clip-vit-large-patch14").to(device)
+    processor=CLIPProcessor.from_pretrained("openai/clip-vit-large-patch14")
     model.eval()
-    return model, processor
+    return model,processor
 
 
-def clip_image_similarity(candidate, target, model, processor, device):
-    inputs = processor(
-        images=[target.convert("RGB"), candidate.convert("RGB")],
-        return_tensors="pt",
-    ).to(device)
-    with torch.no_grad():
-        features = model.get_image_features(**inputs)
-    features = torch.nn.functional.normalize(features, dim=-1)
-    return float((features[0] * features[1]).sum().item())
+def feature_tensor(features):
+  for name in {"image_embeds", "text_embeds", "pooler_output", "last_hidden_state"}:
+    value = getattr(features, name , None)
+    if isinstance(value, torch.Tensor):
+      return value[:,0] if name == "last_hidden_state" else value
+    
+
+def clip_image_similarity(candidate, target ,model,processor,device):
+  inputs = processor(images=[target.convert("RGB"), candidate.convert("RGB")], return_tensors="pt",).to(device)
+  features = model.get_image_features(**inputs)
+  features_t = feature_tensor(features)
+  features_n = torch.nn.functional.normalize(features_t, dim=-1)
+  similarity = float((features_n[0]* features_n[1]).sum().item())
+  return similarity
 
 
-def load_lpips(device: str):
+
+def load_lpips(device):
     model = lpips.LPIPS(net="alex").to(device)
     model.eval()
     return model
@@ -38,7 +44,7 @@ def lpips_distance(candidate, target, loss_fn, device):
     return float(result.item())
 
 
-def mse_distance(candidate, target);
+def mse_distance(candidate, target):
     candidate_arr = np.asarray(candidate.convert("RGB"), dtype=np.float32) / 255.0
     target_arr    = np.asarray(target.convert("RGB"),    dtype=np.float32) / 255.0
     return float(np.mean((target_arr - candidate_arr) ** 2))
@@ -74,5 +80,5 @@ def compute_fitness(
         "fitness": fitness,
         "clip":    clip_score,
         "lpips":   lpips_score,
-        "mse":     rmse_score,
+        "rmse":     rmse_score,
     }

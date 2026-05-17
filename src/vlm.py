@@ -20,6 +20,7 @@ def _generate_one_candidate(
     vlm,
     processor,
     temperature = 0.9,
+    hint ="",
 ):
     messages = [
         {
@@ -27,7 +28,7 @@ def _generate_one_candidate(
             "content": (
                 "You are an expert at writing LCM image generation prompts. "
                 "Analyse the given image and write a single prompt that, when rendered with an LCM diffusion model, reproduces it as closely as possible "
-                "Focus on: subject, style, lighting, colours, composition, mood, and quality tags. "
+                f"{hint} "
                 "Return ONLY the prompt text, nothing else."
             ),
         },
@@ -71,6 +72,19 @@ def _generate_one_candidate(
 
     return prompt
 
+STYLE_HINTS = [
+    "Focus on the subject and its physical description.",
+    "Focus on the lighting, shadows, and atmosphere.",
+    "Focus on colours, tones, and colour palette.",
+    "Focus on composition, framing, and perspective.",
+    "Focus on mood, emotion, and narrative.",
+    "Focus on artistic style and visual quality tags.",
+    "Focus on textures, materials, and surface details.",
+    "Focus on background, setting, and environment.",
+    "Focus on contrast, saturation, and visual impact.",
+    "Focus on photographic style, lens, and depth of field.",
+]
+
 
 def generate_initial_candidates(
     target_path,
@@ -82,7 +96,8 @@ def generate_initial_candidates(
     image = Image.open(target_path).convert("RGB")
     candidates = []
     for i in range(n_candidates):
-        prompt = _generate_one_candidate(image, vlm, processor, temperature)
+        hint = STYLE_HINTS[i % len(STYLE_HINTS)]
+        prompt = _generate_one_candidate(image, vlm, processor, temperature,hint)
         candidates.append(prompt)
         print(f"  [{i+1:02d}/{n_candidates}] {prompt}")
 

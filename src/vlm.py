@@ -26,7 +26,7 @@ def _generate_one_candidate(
             "role": "system",
             "content": (
                 "You are an expert at writing LCM image generation prompts. "
-                "Analyse the given image and write a single prompt that, when rendered with an LCM diffusion model, reproduces it as closely as possible. "
+                "Analyse the given image and write a single prompt that, when rendered with an LCM diffusion model, reproduces it as closely as possible "
                 "Focus on: subject, style, lighting, colours, composition, mood, and quality tags. "
                 "Return ONLY the prompt text, nothing else."
             ),
@@ -55,7 +55,7 @@ def _generate_one_candidate(
     with torch.no_grad():
         generated_ids = vlm.generate(
             **inputs,
-            max_new_tokens=128,
+            max_new_tokens=50,
             temperature=temperature,
         )
 

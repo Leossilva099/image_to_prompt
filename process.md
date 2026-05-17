@@ -1,0 +1,1 @@
+1- The following part of your input was truncated because CLIP can only handle sequences up to 77 tokens, so we changed vlm to produce in maximum 50 tokens instead of 128 (default) to maintain interpretability and avoid CLIP truncation.

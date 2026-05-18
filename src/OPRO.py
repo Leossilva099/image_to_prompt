@@ -1,103 +1,94 @@
 import torch
-from pathlib import Path
-from PIL import Image
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-def load_llm(model_id = "Qwen/Qwen2.5-7B-Instruct"):
+DIMENSIONS = ["subject", "lighting", "style", "composition", "mood"]
+
+
+def load_llm(model_id="Qwen/Qwen2.5-7B-Instruct"):
     llm = AutoModelForCausalLM.from_pretrained(
         model_id,
         device_map="auto",
         dtype=torch.bfloat16,
     )
-    tokenizer= AutoTokenizer.from_pretrained(model_id)
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
     llm.eval()
     return llm, tokenizer
 
-def format_opro_history(candidates):
-    sorted_candidates = sorted(candidates, key=lambda x: x['fitness'], reverse=False)
-    
-    formatted_text = "PREVIOUS ATTEMPTS HISTORY\n\n"
-    for idx, c in enumerate(sorted_candidates, 1):
-        prompt = c['prompt'].strip()
-            
-        formatted_text += f"Candidate {idx}\n"
-        formatted_text += f"Prompt: {prompt}\n"
-        formatted_text += f"Score: {c['fitness']:.3f}\n"
-        formatted_text += "-------------------\n"
-    return formatted_text
+
+def _format_top_k(candidates, top_k=5):
+    top = sorted(candidates, key=lambda x: x["fitness"], reverse=True)[:top_k]
+    lines = []
+    for c in top:
+        lines.append(f"Score {c['fitness']:.3f}: {c['prompt'].strip()}")
+    return "\n".join(lines)
 
 
-def generate_candidates_opro(
-    candidates,
-    llm,
-    tokenizer,
-    temperature = 0.9,
-):
-    
-    prompts_history=format_opro_history(candidates)
+def _generate_one_dimension(candidates, llm, tokenizer, dimension, temperature):
+    top_refs = _format_top_k(candidates, top_k=5)
+
+    DIMENSION_GUIDE = {
+        "subject":     "the main subject: its appearance, details, and physical description. Do NOT describe lighting, style tags, or composition.",
+        "lighting":    "lighting, shadows, and atmosphere only. Do NOT describe the subject in detail or add style/quality tags.",
+        "style":       "artistic style, rendering quality, and visual technique only (e.g. painterly, cinematic, photorealistic). Do NOT describe subject or lighting.",
+        "composition": "framing, perspective, depth of field, and spatial arrangement only. Do NOT describe colors, mood, or style.",
+        "mood":        "emotional tone, narrative, and mood only. Do NOT describe physical details, lighting specifics, or technical tags.",
+    }
+
+    guide = DIMENSION_GUIDE[dimension]
+
     messages = [
-    {
-        "role": "system",
-        "content": (
-            "You are an expert at optimizing image generation prompts for LCM diffusion models. "
-            "You will receive a list of prompts sorted by score from worst to best (0 to 1). "
-            "Your goal is to analyse the highest-scoring prompts and generate a NEW, improved prompt "
-            "that builds on what worked best. "
-            "The prompt must be short, complete, and under 50 tokens. No incomplete sentences. "
-            "Output ONLY the new prompt text, nothing else."
-        ),
-    },
-    {
-        "role": "user",
-        "content": (
-            "Below are previous prompts sorted by score from worst to best.\n"
-            "The score ranges from 0 to 1. The last candidate has the highest score.\n\n"
-            f"{prompts_history}\n\n"
-            "Analyse the highest-scoring prompts carefully and generate a NEW prompt "
-            "that is DIFFERENT from all the prompts above, scores higher than all of them, "
-            "and is complete and under 50 tokens. "
-            "Output ONLY the prompt text, nothing else."
-        ),
-    },
-]
-    
+        {
+            "role": "system",
+            "content": (
+                "You are an expert prompt engineer for LCM diffusion models.\n"
+                "You will receive the top-scoring prompts found so far.\n"
+                "Your task: write ONE new prompt that keeps the best visual elements "
+                "from those references but is restructured to focus EXCLUSIVELY on "
+                f"**{dimension}**.\n\n"
+                f"FOCUS ONLY ON: {guide}\n\n"
+                "Rules:\n"
+                "• Under 70 tokens, complete sentence.\n"
+                "• Do NOT copy any prompt verbatim — recombine and improve.\n"
+                "• Output ONLY the prompt text, nothing else."
+            ),
+        },
+        {
+            "role": "user",
+            "content": (
+                f"TOP REFERENCES:\n{top_refs}\n\n"
+                f"Write a new prompt focused EXCLUSIVELY on **{dimension}**. "
+                f"Under 70 tokens. Output ONLY the prompt text."
+            ),
+        },
+    ]
+
     text = tokenizer.apply_chat_template(
-    messages,
-    tokenize=False,
-    add_generation_prompt=True,
+        messages, tokenize=False, add_generation_prompt=True
     )
     model_inputs = tokenizer([text], return_tensors="pt").to(llm.device)
 
     generated_ids = llm.generate(
         **model_inputs,
-        max_new_tokens=50,
+        max_new_tokens=70,
         temperature=temperature,
+        do_sample=True,
     )
-    output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist() 
-
-    content = tokenizer.decode(output_ids, skip_special_tokens=True)
-
-    return content
+    output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist()
+    return tokenizer.decode(output_ids, skip_special_tokens=True).strip()
 
 
 def generate_initial_candidates(
     llm,
     tokenizer,
     candidates,
-    n_candidates = 5,
-    temperature = 0.9,
+    n_candidates=5,
+    temperature=0.9,
 ):
-    candidates_opro=[]
+    results = []
     for i in range(n_candidates):
-        prompt = generate_candidates_opro(candidates,llm,tokenizer,temperature)
-        candidates_opro.append(prompt)
-        print(f"  [{i+1:02d}/{n_candidates}] {prompt}")
-
-    print(f" {len(candidates_opro)} generated candidates")
-    return candidates_opro
-
-
-
-
-
-
+        dimension = DIMENSIONS[i % len(DIMENSIONS)]
+        prompt = _generate_one_dimension(candidates, llm, tokenizer, dimension, temperature)
+        results.append(prompt)
+        print(f"  [{i+1:02d}/{n_candidates}] [{dimension}] {prompt}")
+    print(f" {len(results)} generated candidates")
+    return results

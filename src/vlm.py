@@ -27,9 +27,10 @@ def _generate_one_candidate(
             "role": "system",
             "content": (
                 "You are an expert at writing LCM image generation prompts. "
-                "Analyse the given image and write a single prompt that, when rendered with an LCM diffusion model, reproduces it as closely as possible "
+                "Analyse the given image and write a single prompt that, when rendered with an LCM diffusion model, reproduces it as closely as possible. "
                 f"{hint} "
-                "Return ONLY the prompt text, nothing else."
+                "The prompt must be short, complete, and under 50 tokens. "
+                "No incomplete sentences. Return ONLY the prompt text, nothing else."
             ),
         },
         {
@@ -38,7 +39,7 @@ def _generate_one_candidate(
                 {"type": "image", "image": image},
                 {
                     "type": "text",
-                    "text": "Write a single image generation prompt that reproduces this image. Return ONLY the prompt.",
+                    "text": "Write a single SHORT and COMPLETE image generation prompt (under 50 tokens) that reproduces this image. Return ONLY the prompt.",
                 },
             ],
         },

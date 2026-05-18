@@ -3,7 +3,7 @@ from pathlib import Path
 from PIL import Image
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-def load_llm(model_id = "Qwen/Qwen3-4B-Instruct-2507"):
+def load_llm(model_id = "Qwen/Qwen2.5-7B-Instruct"):
     llm = AutoModelForCausalLM.from_pretrained(
         model_id,
         device_map="auto",
@@ -43,6 +43,7 @@ def generate_candidates_opro(
             "You will receive a list of prompts sorted by score from worst to best (0 to 1). "
             "Your goal is to analyse the highest-scoring prompts and generate a NEW, improved prompt "
             "that builds on what worked best. "
+            "The prompt must be short, complete, and under 50 tokens. No incomplete sentences. "
             "Output ONLY the new prompt text, nothing else."
         ),
     },
@@ -53,11 +54,12 @@ def generate_candidates_opro(
             "The score ranges from 0 to 1. The last candidate has the highest score.\n\n"
             f"{prompts_history}\n\n"
             "Analyse the highest-scoring prompts carefully and generate a NEW prompt "
-            "that is different from all the prompts above and scores higher than all of them. "
+            "that is DIFFERENT from all the prompts above, scores higher than all of them, "
+            "and is complete and under 50 tokens. "
             "Output ONLY the prompt text, nothing else."
         ),
     },
-    ]
+]
     
     text = tokenizer.apply_chat_template(
     messages,
@@ -69,7 +71,7 @@ def generate_candidates_opro(
     generated_ids = llm.generate(
         **model_inputs,
         max_new_tokens=50,
-        temperature=temperature
+        temperature=temperature,
     )
     output_ids = generated_ids[0][len(model_inputs.input_ids[0]):].tolist() 
 

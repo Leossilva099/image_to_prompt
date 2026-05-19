@@ -4,7 +4,7 @@ from PIL import Image
 from transformers import Qwen3VLForConditionalGeneration, AutoProcessor
 
 
-def load_vlm(model_id = "Qwen/Qwen3-VL-2B-Instruct"):
+def load_vlm(model_id = "Qwen/Qwen3-VL-8B-Instruct"):
     vlm = Qwen3VLForConditionalGeneration.from_pretrained(
         model_id,
         device_map="auto",
@@ -29,10 +29,12 @@ def _generate_one_candidate(
             "content": (
                 "You are an expert at writing LCM image generation prompts. "
                 "Analyse the given image and write a single, complete prompt that, when rendered with an LCM diffusion model, reproduces it as closely as possible.\n\n"
-                f"EMPHASIS GUIDE: {hint}\n\n"
+                f"STRUCTURE GUIDE: {hint}\n\n"
                 "The prompt must cover all key visual aspects (subject, setting, lighting, style, composition) "
-                "but give particular weight to the indicated emphasis. "
-                "Under 70 tokens, no incomplete sentences. Return ONLY the prompt text, nothing else."
+                "but follow the structure prescribed above. "
+                "CRITICAL: maximum 70 tokens. Every prompt must be complete. "
+                "**VERY IMPORTANT** - NEVER cut mid-sentence. "
+                "Return ONLY the prompt text, nothing else."
             ),
         },
         {
@@ -42,9 +44,8 @@ def _generate_one_candidate(
                 {
                     "type": "text",
                     "text": (
-                        f"Write a complete image generation prompt with particular emphasis on {dimension}. "
-                        f"Cover all visual aspects but make {dimension} the strongest element. "
-                        "Under 70 tokens. Return ONLY the prompt text."
+                        f"Follow the structure guide and write a complete prompt that starts as instructed and emphasises {dimension}. "
+                        "Maximum 70 tokens. End with a complete sentence. **NEVER cut mid-sentence**. Return ONLY the prompt text."
                     ),
                 },
             ],
@@ -63,7 +64,7 @@ def _generate_one_candidate(
     with torch.no_grad():
         generated_ids = vlm.generate(
             **inputs,
-            max_new_tokens=70,
+            max_new_tokens=72,
             temperature=temperature,
             do_sample=True,
         )
@@ -82,53 +83,53 @@ def _generate_one_candidate(
 
 STYLE_HINTS = [
     (
-        "Write a complete prompt with particular emphasis on the main subject: "
-        "its shape, colour, material, and physical details. Also include setting, lighting, and style.",
+        "START with the main subject: its shape, colour, material, and physical details. "
+        "Then add setting, lighting, and style.",
         "subject"
     ),
     (
-        "Write a complete prompt with particular emphasis on lighting, shadows, and atmosphere. "
-        "Also describe the subject, setting, and overall style.",
+        "START with the lighting conditions: quality, direction, colour temperature, and shadows. "
+        "Then describe the subject, setting, and overall atmosphere.",
         "lighting"
     ),
     (
-        "Write a complete prompt with particular emphasis on the colour palette and dominant tones. "
-        "Also describe the subject, composition, and mood.",
+        "START with the dominant colour palette and tones. "
+        "Then describe the subject, composition, and mood.",
         "colours"
     ),
     (
-        "Write a complete prompt with particular emphasis on composition, framing, and spatial arrangement. "
-        "Also describe the subject, lighting, and style.",
+        "START with the framing and spatial arrangement: perspective, depth of field, and focal point. "
+        "Then describe the subject, lighting, and style.",
         "composition"
     ),
     (
-        "Write a complete prompt with particular emphasis on the mood, emotion, and narrative feeling. "
-        "Also describe the subject, setting, and visual style.",
+        "START with the emotional atmosphere and narrative feeling. "
+        "Then describe the subject, setting, and visual style.",
         "mood"
     ),
     (
-        "Write a complete prompt with particular emphasis on artistic style and rendering quality "
-        "(e.g. painterly, cinematic, photorealistic, 8K). Also describe subject and lighting.",
+        "START with the artistic style and rendering quality: medium, technique, and visual treatment. "
+        "Then describe the subject, lighting, and composition.",
         "style"
     ),
     (
-        "Write a complete prompt with particular emphasis on textures and surface materials. "
-        "Also describe the subject, background, and lighting.",
+        "START with the surface textures and material details of the key objects. "
+        "Then describe the subject, background, and lighting.",
         "textures"
     ),
     (
-        "Write a complete prompt with particular emphasis on the background and environment. "
-        "Also describe the main subject, lighting, and overall style.",
+        "START with the background and environment: its colour, texture, and depth. "
+        "Then describe the main subject and lighting.",
         "background"
     ),
     (
-        "Write a complete prompt with particular emphasis on photographic technique: "
-        "lens, depth of field, focal length, camera angle. Also describe subject and lighting.",
+        "START with camera and lens parameters: focal length, aperture, depth of field, and camera angle. "
+        "Then describe subject, lighting, and colour grading.",
         "photography"
     ),
     (
-        "Write a complete prompt with particular emphasis on contrast, saturation, and visual impact. "
-        "Also describe the subject, composition, and style.",
+        "START with the tonal contrast: bright highlights versus deep shadows. "
+        "Then describe the subject, composition, and saturation.",
         "contrast"
     ),
 ]
@@ -147,7 +148,7 @@ def generate_initial_candidates(
         hint, dimension = STYLE_HINTS[i % len(STYLE_HINTS)]
         prompt = _generate_one_candidate(image, vlm, processor, temperature, hint, dimension)
         candidates.append(prompt)
-        print(f"  [{i+1:02d}/{n_candidates}] [{dimension}] {prompt}")
+        print(f"  [{i+1:02d}/{n_candidates}] {prompt}")
 
     print(f" {len(candidates)} generated candidates")
     return candidates

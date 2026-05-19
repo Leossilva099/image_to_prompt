@@ -12,7 +12,12 @@
 
 7 - To address the OPRO convergence issue and improve diversity for the GE stage, the prompt strategy was redesigned in both the VLM and OPRO modules. In the VLM, the style hints were reformulated as dimension instructions: the hints now explicitly specifies which single visual dimension to describe and prohibits mentioning other dimensions. In the OPRO, the generation strategy was changed from a single generic call to one targeted call per visual dimension (subject, lighting, style, composition, mood), cycling through them each iteration. Each call receives only the top-5 highest-scoring candidates as references instead of 20, and a dimension guide specifying what to include and what to suppress. This ensures that the 5 new candidates generated per OPRO iteration are structurally distinct from each other, maintaining population diversity throughout the optimization and providing meaningful variation for the GE stage to exploit.
 
-8 - The exclusive dimension approach produced incomplete prompts, each covering only one visual aspect. This is problematic for GA crossover: combining two incomplete parents does not reliably yield a complete offspring. The approach was changed to emphasis-based generation, each prompt covers all visual aspects but gives particular weight to one dimension. Structural diversity is preserved while every candidate remains a complete, viable prompt for the diffusion model.
+8 - The exclusive dimension approach produced incomplete prompts, each covering only one visual aspect. This is problematic for GA crossover: combining two incomplete parents does not reliably yield a complete offspring. The approach was changed to emphasis-based generation, each prompt covers all visual aspects but gives particular weight to one dimension. Structural diversity is preserved while every candidate remains a complete, viable prompt for the diffusion model. Candidate diversity improved noticeably.
+
+
+9 - In the emphasis-based approach, 7 out of 10 candidates still started with near-identical phrasing, converging on the same structure. The style hints were redesigned as structure guides that prescribe the opening of each candidate. This forces structural diversity from the first token and improved from Qwen3-VL-2B-Instruct to Qwen3-VL-8B-Instruct to improve following the instructions.
+
+
 
 
 

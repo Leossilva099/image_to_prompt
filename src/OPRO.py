@@ -48,7 +48,8 @@ def _generate_one_dimension(candidates, llm, tokenizer, dimension, temperature):
                 f"EMPHASIS: {guide}\n\n"
                 "Rules:\n"
                 " - Write a complete prompt covering all visual aspects (subject, lighting, style, composition, mood).\n"
-                " - Under 70 tokens, complete sentence.\n"
+                " - Maximum 70 tokens. Every sentence must be complete."
+                " **VERY IMPORTANT** - NEVER cut mid-sentence.\n"
                 " - Do NOT copy any prompt word for word, recombine and improve.\n"
                 " - Output ONLY the prompt text, nothing else."
             ),
@@ -58,7 +59,7 @@ def _generate_one_dimension(candidates, llm, tokenizer, dimension, temperature):
             "content": (
                 f"TOP REFERENCES:\n{top_refs}\n\n"
                 f"Write a complete prompt that synthesises the best elements above and particularly excels at **{dimension}**. "
-                f"Under 70 tokens. Output ONLY the prompt text."
+                f"Maximum 70 tokens. End with a complete sentence. **NEVER cut mid-sentence**. Output ONLY the prompt text."
             ),
         },
     ]
@@ -70,7 +71,7 @@ def _generate_one_dimension(candidates, llm, tokenizer, dimension, temperature):
 
     generated_ids = llm.generate(
         **model_inputs,
-        max_new_tokens=70,
+        max_new_tokens=72,
         temperature=temperature,
         do_sample=True,
     )
@@ -90,6 +91,6 @@ def generate_initial_candidates(
         dimension = DIMENSIONS[i % len(DIMENSIONS)]
         prompt = _generate_one_dimension(candidates, llm, tokenizer, dimension, temperature)
         results.append(prompt)
-        print(f"  [{i+1:02d}/{n_candidates}] [{dimension}] {prompt}")
+        print(f"  [{i+1:02d}/{n_candidates}] {prompt}")
     print(f" {len(results)} generated candidates")
     return results

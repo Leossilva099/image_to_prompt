@@ -17,6 +17,9 @@
 
 9 - In the emphasis-based approach, 7 out of 10 candidates still started with near-identical phrasing, converging on the same structure. The style hints were redesigned as structure guides that prescribe the opening of each candidate. This forces structural diversity from the first token and improved from Qwen3-VL-2B-Instruct to Qwen3-VL-8B-Instruct to improve following the instructions.
 
+10 - The VLM structure guides produced well-diversified initial candidates. However, the OPRO stage collapsed to a single template by iteration 2: all 5 candidates per iteration started with "A crisp glass of vibrant orange juice, garnished with citrus slices and zest, sits on a warm wooden surface...", varying only the tail. The best VLM candidate established this structure, which was fed back as a top reference and anchored the LLM. Two changes were made to address this. First, the same opening prescription approach used in the VLM was applied to the OPRO, forcing structural diversity from the first token. Second, the text-only Qwen2.5-7B-Instruct was replaced with Qwen2.5-VL-7B-Instruct, giving the OPRO direct visual grounding on the target image. The model now receives the target image alongside the top-scoring references at every iteration, allowing it to generate candidates informed by the actual visual content rather than solely remixing text descriptions.
+
+
 
 
 

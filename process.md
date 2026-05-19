@@ -21,6 +21,13 @@
 
 11 - After 18 OPRO iterations, the population collapsed to near-identical prompts several were exact duplicates and most shared the same opening structure with only minor word changes. The opening rules were too restrictive and not sufficient to prevent convergence. Three changes were made. First, the opening rules were removed and the approach reverted to emphasis-based generation (point 8), with the instruction strengthened to "use a different structure and opening from all references". Second, cosine similarity filtering (TF-IDF, threshold 0.85) was added inside the generation loop: each candidate is checked for diversity against the existing population and the other candidates generated in the same iteration, with up to 3 retries before accepting. Third, in the main loop, prompts too similar to the population are skipped before rendering, avoiding wasting GPU on candidates that would be rejected anyway.
 
+12 - The emphasis-based approach improved structural diversity but produced prompts that were overly restrictive: each candidate leaned too heavily on a single visual dimension, resulting in prompts with loosely connected descriptors rather than cohesive, balanced descriptions. Since the OPRO model now has direct visual grounding via the target image and access to the top-5 scoring references, explicit dimension guidance is no longer necessary for diversity, the model can observe the full scene and learn from the best candidates to generate naturally. The emphasis dimension cycling was removed entirely, leaving the model free to generate complete, balanced prompts. Diversity is now enforced solely by cosine similarity filtering (TF-IDF), with the threshold lowered from 0.85 to 0.75 to compensate for the removal of the structural diversity pressure that the emphasis provided.
+
+13 - Removing emphasis from OPRO alone caused a regression: best fitness dropped from 0.8489 to 0.8372 and structural convergence to "A close-up of a glass of orange juice..." returned within a few iterations. The OPRO was still being anchored by VLM candidates generated with structure guides. The same free generation approach was therefore applied to the VLM, structure guides and dimension hints removed, and cosine similarity filtering (threshold 0.75) added. Both stages now generate freely with only visual grounding and cosine diversity pressure.
+
+14 - Free generation with cosine similarity filtering in the VLM did not work: all 10 candidates were near-identical despite passing the filter, as TF-IDF fails to capture semantic redundancy. The VLM was reverted to structure guides (point 9). Point 11 remains the best result so far.
+
+
 
 
 

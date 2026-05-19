@@ -19,6 +19,10 @@
 
 10 - The VLM structure guides produced well-diversified initial candidates. However, the OPRO stage collapsed to a single template by iteration 2: all 5 candidates per iteration started with "A crisp glass of vibrant orange juice, garnished with citrus slices and zest, sits on a warm wooden surface...", varying only the tail. The best VLM candidate established this structure, which was fed back as a top reference and anchored the LLM. Two changes were made to address this. First, the same opening prescription approach used in the VLM was applied to the OPRO, forcing structural diversity from the first token. Second, the text-only Qwen2.5-7B-Instruct was replaced with Qwen2.5-VL-7B-Instruct, giving the OPRO direct visual grounding on the target image. The model now receives the target image alongside the top-scoring references at every iteration, allowing it to generate candidates informed by the actual visual content rather than solely remixing text descriptions.
 
+11 - After 18 OPRO iterations, the population collapsed to near-identical prompts several were exact duplicates and most shared the same opening structure with only minor word changes. The opening rules were too restrictive and not sufficient to prevent convergence. Three changes were made. First, the opening rules were removed and the approach reverted to emphasis-based generation (point 8), with the instruction strengthened to "use a different structure and opening from all references". Second, cosine similarity filtering (TF-IDF, threshold 0.85) was added inside the generation loop: each candidate is checked for diversity against the existing population and the other candidates generated in the same iteration, with up to 3 retries before accepting. Third, in the main loop, prompts too similar to the population are skipped before rendering, avoiding wasting GPU on candidates that would be rejected anyway.
+
+
+
 
 
 

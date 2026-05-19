@@ -27,11 +27,11 @@ def _generate_one_dimension(candidates, llm, tokenizer, dimension, temperature):
     top_refs = _format_top_k(candidates, top_k=5)
 
     DIMENSION_GUIDE = {
-        "subject":     "the main subject: its appearance, details, and physical description. Do NOT describe lighting, style tags, or composition.",
-        "lighting":    "lighting, shadows, and atmosphere only. Do NOT describe the subject in detail or add style/quality tags.",
-        "style":       "artistic style, rendering quality, and visual technique only (e.g. painterly, cinematic, photorealistic). Do NOT describe subject or lighting.",
-        "composition": "framing, perspective, depth of field, and spatial arrangement only. Do NOT describe colors, mood, or style.",
-        "mood":        "emotional tone, narrative, and mood only. Do NOT describe physical details, lighting specifics, or technical tags.",
+        "subject":     "make the main subject, its appearance, details, and physical description, the defining quality. Also cover lighting, style, and composition.",
+        "lighting":    "make the lighting, shadows, and atmosphere the defining quality. Also cover the subject, setting, and style.",
+        "style":       "make the artistic style and rendering quality (e.g. cinematic, photorealistic, painterly) the defining quality. Also cover subject and lighting.",
+        "composition": "make the framing, perspective, depth of field, and spatial arrangement the defining quality. Also cover subject and style.",
+        "mood":        "make the emotional tone and narrative feeling the defining quality. Also cover subject, lighting, and style.",
     }
 
     guide = DIMENSION_GUIDE[dimension]
@@ -42,21 +42,22 @@ def _generate_one_dimension(candidates, llm, tokenizer, dimension, temperature):
             "content": (
                 "You are an expert prompt engineer for LCM diffusion models.\n"
                 "You will receive the top-scoring prompts found so far.\n"
-                "Your task: write ONE new prompt that keeps the best visual elements "
-                "from those references but is restructured to focus EXCLUSIVELY on "
+                "Your task: write ONE new, complete prompt that synthesises the best visual elements "
+                "from those references and particularly excels at "
                 f"**{dimension}**.\n\n"
-                f"FOCUS ONLY ON: {guide}\n\n"
+                f"EMPHASIS: {guide}\n\n"
                 "Rules:\n"
-                "• Under 70 tokens, complete sentence.\n"
-                "• Do NOT copy any prompt verbatim — recombine and improve.\n"
-                "• Output ONLY the prompt text, nothing else."
+                " - Write a complete prompt covering all visual aspects (subject, lighting, style, composition, mood).\n"
+                " - Under 70 tokens, complete sentence.\n"
+                " - Do NOT copy any prompt word for word, recombine and improve.\n"
+                " - Output ONLY the prompt text, nothing else."
             ),
         },
         {
             "role": "user",
             "content": (
                 f"TOP REFERENCES:\n{top_refs}\n\n"
-                f"Write a new prompt focused EXCLUSIVELY on **{dimension}**. "
+                f"Write a complete prompt that synthesises the best elements above and particularly excels at **{dimension}**. "
                 f"Under 70 tokens. Output ONLY the prompt text."
             ),
         },

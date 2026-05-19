@@ -28,10 +28,11 @@ def _generate_one_candidate(
             "role": "system",
             "content": (
                 "You are an expert at writing LCM image generation prompts. "
-                "Analyse the given image and write a single prompt that, when rendered with an LCM diffusion model, reproduces it as closely as possible.\n\n"
-                f"STRICT FOCUS - {hint}\n\n"
-                "The prompt must be short, complete, and under 70 tokens. "
-                "No incomplete sentences. Return ONLY the prompt text, nothing else."
+                "Analyse the given image and write a single, complete prompt that, when rendered with an LCM diffusion model, reproduces it as closely as possible.\n\n"
+                f"EMPHASIS GUIDE: {hint}\n\n"
+                "The prompt must cover all key visual aspects (subject, setting, lighting, style, composition) "
+                "but give particular weight to the indicated emphasis. "
+                "Under 70 tokens, no incomplete sentences. Return ONLY the prompt text, nothing else."
             ),
         },
         {
@@ -41,8 +42,9 @@ def _generate_one_candidate(
                 {
                     "type": "text",
                     "text": (
-                        f"Write a prompt focused EXCLUSIVELY on {dimension}. "
-                        "Under 70 tokens, complete. Return ONLY the prompt text."
+                        f"Write a complete image generation prompt with particular emphasis on {dimension}. "
+                        f"Cover all visual aspects but make {dimension} the strongest element. "
+                        "Under 70 tokens. Return ONLY the prompt text."
                     ),
                 },
             ],
@@ -80,54 +82,53 @@ def _generate_one_candidate(
 
 STYLE_HINTS = [
     (
-        "Describe ONLY the main subject: its shape, colour, and physical details. "
-        "Do NOT mention lighting, style tags, background, or composition.",
+        "Write a complete prompt with particular emphasis on the main subject: "
+        "its shape, colour, material, and physical details. Also include setting, lighting, and style.",
         "subject"
     ),
     (
-        "Describe ONLY the lighting, shadows, and atmosphere. "
-        "Do NOT describe the subject in detail, add style tags, or mention composition.",
+        "Write a complete prompt with particular emphasis on lighting, shadows, and atmosphere. "
+        "Also describe the subject, setting, and overall style.",
         "lighting"
     ),
     (
-        "Describe ONLY the colour palette, dominant tones, and colour relationships. "
-        "Do NOT describe the subject, lighting, or composition.",
+        "Write a complete prompt with particular emphasis on the colour palette and dominant tones. "
+        "Also describe the subject, composition, and mood.",
         "colours"
     ),
     (
-        "Describe ONLY the composition, framing, and spatial arrangement. "
-        "Do NOT describe colours, mood, or artistic style.",
+        "Write a complete prompt with particular emphasis on composition, framing, and spatial arrangement. "
+        "Also describe the subject, lighting, and style.",
         "composition"
     ),
     (
-        "Describe ONLY the mood, emotion, and narrative feeling of the scene. "
-        "Do NOT describe physical details, lighting specifics, or technical tags.",
+        "Write a complete prompt with particular emphasis on the mood, emotion, and narrative feeling. "
+        "Also describe the subject, setting, and visual style.",
         "mood"
     ),
     (
-        "Describe ONLY the artistic style, rendering quality, and visual technique "
-        "(e.g. painterly, cinematic, photorealistic, 8K). "
-        "Do NOT describe the subject, lighting, or composition.",
+        "Write a complete prompt with particular emphasis on artistic style and rendering quality "
+        "(e.g. painterly, cinematic, photorealistic, 8K). Also describe subject and lighting.",
         "style"
     ),
     (
-        "Describe ONLY the textures and surface materials visible in the image. "
-        "Do NOT mention mood, lighting, or style tags.",
+        "Write a complete prompt with particular emphasis on textures and surface materials. "
+        "Also describe the subject, background, and lighting.",
         "textures"
     ),
     (
-        "Describe ONLY the background, setting, and environment. "
-        "Do NOT describe the main subject or foreground elements.",
+        "Write a complete prompt with particular emphasis on the background and environment. "
+        "Also describe the main subject, lighting, and overall style.",
         "background"
     ),
     (
-        "Describe ONLY the photographic technique: lens, depth of field, focal length, "
-        "and camera angle. Do NOT describe colours, mood, or subject details.",
+        "Write a complete prompt with particular emphasis on photographic technique: "
+        "lens, depth of field, focal length, camera angle. Also describe subject and lighting.",
         "photography"
     ),
     (
-        "Describe ONLY the contrast, saturation, and overall visual impact. "
-        "Do NOT describe subject details, composition, or artistic style.",
+        "Write a complete prompt with particular emphasis on contrast, saturation, and visual impact. "
+        "Also describe the subject, composition, and style.",
         "contrast"
     ),
 ]

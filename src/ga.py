@@ -84,10 +84,11 @@ def _mutate(llm, tokenizer, prompt, temperature=1.0):
             "role": "system",
             "content": (
                 "You are an expert prompt engineer for LCM diffusion models.\n"
-                "You will receive a prompt. Rewrite it by freely changing lighting, artistic style, "
-                "composition, mood, and atmosphere — but the main subject must remain exactly the same.\n\n"
-                "Rules:\n"
-                " - NEVER change the main subject.\n"
+                "You will receive a prompt. Your ONLY job is to rewrite HOW the scene is described — "
+                "change the lighting, artistic style, composition, mood, or atmosphere.\n\n"
+                "ABSOLUTE RULES:\n"
+                " - Every object, food, drink, and prop in the original must appear in your output.\n"
+                " - Do NOT introduce any new objects, foods, or drinks not present in the original.\n"
                 " - Maximum 70 tokens. Every sentence must be complete. **NEVER cut mid-sentence.**\n"
                 " - Output ONLY the new prompt text, nothing else."
             ),
@@ -96,7 +97,7 @@ def _mutate(llm, tokenizer, prompt, temperature=1.0):
             "role": "user",
             "content": (
                 f"Prompt to mutate:\n{prompt.strip()}\n\n"
-                "Keep the subject identical. Freely change lighting, style, composition, or mood. "
+                "Same objects, different lighting/style/mood/composition. "
                 "Maximum 70 tokens. End with a complete sentence. Output ONLY the prompt text."
             ),
         },
@@ -130,7 +131,7 @@ def evolve(llm, tokenizer, population, n_candidates=5, mutation_rate=0.3, temper
             child = _mutate(llm, tokenizer, child)
 
         new_prompts.append(child)
-        print(f"{flag}-[{i+1:02d}/{n_candidates}] {child}")
+        print(f"MUT-{flag}-[{i+1:02d}/{n_candidates}] {child}")
 
     print(f" {len(new_prompts)} evolved candidates")
     return new_prompts

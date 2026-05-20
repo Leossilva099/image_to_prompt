@@ -11,20 +11,13 @@ def load_clip(device):
     return model,processor
 
 
-def feature_tensor(features):
-  for name in {"image_embeds", "text_embeds", "pooler_output", "last_hidden_state"}:
-    value = getattr(features, name , None)
-    if isinstance(value, torch.Tensor):
-      return value[:,0] if name == "last_hidden_state" else value
-    
-
-def clip_image_similarity(candidate, target ,model,processor,device):
-  inputs = processor(images=[target.convert("RGB"), candidate.convert("RGB")], return_tensors="pt",).to(device)
-  features = model.get_image_features(**inputs)
-  features_t = feature_tensor(features)
-  features_n = torch.nn.functional.normalize(features_t, dim=-1)
-  similarity = float((features_n[0]* features_n[1]).sum().item())
-  return similarity
+def clip_image_similarity(candidate, target, model, processor, device):
+    inputs = processor(images=[target.convert("RGB"), candidate.convert("RGB")], return_tensors="pt").to(device)
+    features = model.get_image_features(**inputs)
+    if not isinstance(features, torch.Tensor):
+        features = features.pooler_output
+    features_n = torch.nn.functional.normalize(features, dim=-1)
+    return float((features_n[0] * features_n[1]).sum().item())
 
 
 

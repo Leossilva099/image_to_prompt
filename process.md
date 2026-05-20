@@ -27,7 +27,9 @@
 
 14 - Free generation with cosine similarity filtering in the VLM did not work: all 10 candidates were near-identical despite passing the filter, as TF-IDF fails to capture semantic redundancy. The VLM was reverted to structure guides (point 9). Point 11 remains the best result so far. So, now we begin on point 11, but trying different tresholds.
 
-15 - OPRO_13 is the best result so far, achieving a top fitness of 0.8696. The population also shows the best structural diversity observed across all runs, with no visible template collapse across the 20 stored candidates. Configuration 14 (VLM with structure guides (point 9) + OPRO with cosine similarity filtering (TF-IDF, threshold 0.75)) is the current best baseline.
+15 - OPRO_13 is the best result so far, achieving a top fitness of 0.8696. The population also shows the best structural diversity observed across all runs, with no visible template collapse across the 20 stored candidates. Configuration 14 (VLM with structure guides (point 9) + OPRO with cosine similarity filtering (TF-IDF, threshold 0.75)) is the current best baseline. Trying now with 0.65.
+
+16 - Stricter TF-IDF thresholds (0.65, 0.70) paradoxically reduced structural diversity. When candidates fail the filter, the model games it with synonym substitution and phrase reordering — lexically different but semantically identical. At 0.75 the model generates more naturally and the VLM structure guides preserve real diversity. Threshold 0.75 is the best setting.
 
 
 

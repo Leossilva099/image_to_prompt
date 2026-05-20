@@ -5,8 +5,7 @@ from sklearn.metrics.pairwise import cosine_similarity as sk_cosine_sim
 from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
 
 DIMENSIONS = ["subject", "lighting", "style", "composition", "mood"]
-DIVERSITY_THRESHOLD = 0.85
-
+DIVERSITY_THRESHOLD = 0.75
 
 def load_llm(model_id="Qwen/Qwen2.5-VL-7B-Instruct"):
     llm = Qwen2_5_VLForConditionalGeneration.from_pretrained(

@@ -25,7 +25,9 @@
 
 13 - Removing emphasis from OPRO alone caused a regression: best fitness dropped from 0.8489 to 0.8372 and structural convergence to "A close-up of a glass of orange juice..." returned within a few iterations. The OPRO was still being anchored by VLM candidates generated with structure guides. The same free generation approach was therefore applied to the VLM, structure guides and dimension hints removed, and cosine similarity filtering (threshold 0.75) added. Both stages now generate freely with only visual grounding and cosine diversity pressure.
 
-14 - Free generation with cosine similarity filtering in the VLM did not work: all 10 candidates were near-identical despite passing the filter, as TF-IDF fails to capture semantic redundancy. The VLM was reverted to structure guides (point 9). Point 11 remains the best result so far.
+14 - Free generation with cosine similarity filtering in the VLM did not work: all 10 candidates were near-identical despite passing the filter, as TF-IDF fails to capture semantic redundancy. The VLM was reverted to structure guides (point 9). Point 11 remains the best result so far. So, now we begin on point 11, but trying different tresholds.
+
+15 - OPRO_13 is the best result so far, achieving a top fitness of 0.8696. The population also shows the best structural diversity observed across all runs, with no visible template collapse across the 20 stored candidates. Configuration 14 (VLM with structure guides (point 9) + OPRO with cosine similarity filtering (TF-IDF, threshold 0.75)) is the current best baseline.
 
 
 

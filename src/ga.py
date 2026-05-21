@@ -3,13 +3,14 @@ import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 MODEL_ID = "Qwen/Qwen2.5-7B-Instruct"
+DIVERSITY_THRESHOLD = 0.85
 
 
 def load_llm(model_id=MODEL_ID):
     llm = AutoModelForCausalLM.from_pretrained(
         model_id,
         device_map="auto",
-        dtype=torch.bfloat16,
+        torch_dtype=torch.bfloat16,
     )
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     llm.eval()
@@ -19,6 +20,30 @@ def load_llm(model_id=MODEL_ID):
 def unload_llm(llm, tokenizer):
     del llm, tokenizer
     torch.cuda.empty_cache()
+
+
+def cosine_sim_to_pool(prompt, pool_prompts, clip_model, clip_processor):
+    if not pool_prompts:
+        return 0.0
+    texts = pool_prompts + [prompt]
+    inputs = clip_processor(
+        text=texts,
+        return_tensors="pt",
+        padding=True,
+        truncation=True,
+        max_length=77,
+    ).to(clip_model.device)
+    with torch.no_grad():
+        features = clip_model.get_text_features(**inputs)
+    if not isinstance(features, torch.Tensor):
+        features = features.pooler_output
+    features = torch.nn.functional.normalize(features, dim=-1)
+    sims = (features[-1:] @ features[:-1].T).squeeze(0)
+    return float(sims.max().item())
+
+
+def is_diverse_enough(prompt, population, clip_model, clip_processor, threshold=DIVERSITY_THRESHOLD):
+    return cosine_sim_to_pool(prompt, [c["prompt"] for c in population], clip_model, clip_processor) < threshold
 
 
 def _chat(llm, tokenizer, messages, temperature=0.9, max_new_tokens=72):
@@ -35,18 +60,18 @@ def _chat(llm, tokenizer, messages, temperature=0.9, max_new_tokens=72):
     return tokenizer.decode(output_ids, skip_special_tokens=True).strip()
 
 
-def _roulette_select(population):
-    fitnesses = [max(c["fitness"], 0.0) for c in population]
-    total = sum(fitnesses)
-    if total == 0:
-        return random.choice(population)
+def _rank_select(population):
+    ranked = sorted(population, key=lambda x: x["fitness"])
+    n = len(ranked)
+    weights = list(range(1, n + 1))
+    total = sum(weights)
     pick = random.uniform(0, total)
     cumulative = 0.0
-    for candidate, f in zip(population, fitnesses):
-        cumulative += f
+    for candidate, w in zip(ranked, weights):
+        cumulative += w
         if cumulative >= pick:
             return candidate
-    return population[-1]
+    return ranked[-1]
 
 
 def _crossover(llm, tokenizer, parent_a, parent_b, temperature=0.9):
@@ -55,13 +80,12 @@ def _crossover(llm, tokenizer, parent_a, parent_b, temperature=0.9):
             "role": "system",
             "content": (
                 "You are an expert prompt engineer for LCM diffusion models.\n"
-                "You will receive two parent prompts with their fitness scores.\n"
-                "Your task: write ONE new, complete prompt that combines the strongest visual "
-                "elements from both parents.\n\n"
+                "You will receive two parent prompts. Combine their strongest visual elements "
+                "into one new prompt.\n\n"
                 "Rules:\n"
                 " - Cover all visual aspects (subject, lighting, style, composition, mood).\n"
+                " - Use a different sentence structure and opening words than both parents.\n"
                 " - Maximum 70 tokens. Every sentence must be complete. **NEVER cut mid-sentence.**\n"
-                " - Do NOT copy either prompt word for word — recombine and improve.\n"
                 " - Output ONLY the prompt text, nothing else."
             ),
         },
@@ -70,7 +94,7 @@ def _crossover(llm, tokenizer, parent_a, parent_b, temperature=0.9):
             "content": (
                 f"Parent A (fitness {parent_a['fitness']:.3f}):\n{parent_a['prompt'].strip()}\n\n"
                 f"Parent B (fitness {parent_b['fitness']:.3f}):\n{parent_b['prompt'].strip()}\n\n"
-                "Combine the best elements into one prompt. "
+                "Combine the best elements. Different structure and opening than both parents. "
                 "Maximum 70 tokens. End with a complete sentence. Output ONLY the prompt text."
             ),
         },
@@ -78,57 +102,63 @@ def _crossover(llm, tokenizer, parent_a, parent_b, temperature=0.9):
     return _chat(llm, tokenizer, messages, temperature=temperature)
 
 
-def _mutate(llm, tokenizer, prompt, temperature=1.0):
+def _mutate(llm, tokenizer, prompt, temperature=0.9):
     messages = [
         {
             "role": "system",
             "content": (
                 "You are an expert prompt engineer for LCM diffusion models.\n"
-                "You will receive a prompt. Your ONLY job is to rewrite HOW the scene is described — "
-                "change the lighting, artistic style, composition, mood, or atmosphere.\n\n"
-                "ABSOLUTE RULES:\n"
-                " - Every object, food, drink, and prop in the original must appear in your output.\n"
-                " - Do NOT introduce any new objects, foods, or drinks not present in the original.\n"
-                " - Maximum 70 tokens. Every sentence must be complete. **NEVER cut mid-sentence.**\n"
-                " - Output ONLY the new prompt text, nothing else."
+                "You will receive a prompt. Change exactly ONE adjective or short descriptor "
+                "(a lighting word, texture word, colour word, or mood word) to a different but plausible alternative. "
+                "Everything else must remain word-for-word identical.\n\n"
+                "Rules:\n"
+                " - Change only ONE word or short phrase.\n"
+                " - Do NOT change the subject, objects, or overall scene.\n"
+                " - Output ONLY the modified prompt, nothing else."
             ),
         },
         {
             "role": "user",
             "content": (
-                f"Prompt to mutate:\n{prompt.strip()}\n\n"
-                "Same objects, different lighting/style/mood/composition. "
-                "Maximum 70 tokens. End with a complete sentence. Output ONLY the prompt text."
+                f"Prompt:\n{prompt.strip()}\n\n"
+                "Change one adjective or descriptor. Output ONLY the modified prompt."
             ),
         },
     ]
     return _chat(llm, tokenizer, messages, temperature=temperature)
 
 
-def evolve(llm, tokenizer, population, n_candidates=5, mutation_rate=0.3, temperature=0.9):
+def evolve(llm, tokenizer, population, clip_model, clip_processor,
+           n_candidates=5, iteration=1, base_mutation_rate=0.3, temperature=0.9):
     """
     One GA generation over a population of dicts with keys: prompt, fitness, clip, lpips, rmse.
-    Returns a list of new prompt strings (length == n_candidates).
+    Returns a list of new prompt strings (length <= n_candidates, filtered by diversity).
 
     Steps per child:
-      1. Roulette-wheel selection (fitness-proportionate) to pick two parents.
-      2. LLM crossover.
-      3. Destructive LLM mutation with probability mutation_rate.
+      1. Rank-based selection to pick two parents.
+      2. LLM crossover with forced structural diversity.
+      3. Conservative LLM mutation (one word/adjective swap) with fixed rate.
+      4. CLIP-based diversity filter — skip candidates too similar to existing population.
     """
     new_prompts = []
     for i in range(n_candidates):
-        parent_a = _roulette_select(population)
-        parent_b = _roulette_select(population)
+        parent_a = _rank_select(population)
+        parent_b = _rank_select(population)
         retries = 0
         while parent_b["prompt"] == parent_a["prompt"] and len(population) > 1 and retries < 5:
-            parent_b = _roulette_select(population)
+            parent_b = _rank_select(population)
             retries += 1
 
         child = _crossover(llm, tokenizer, parent_a, parent_b, temperature)
         flag = 0
-        if random.random() < mutation_rate:
+        if random.random() < base_mutation_rate:
             flag = 1
             child = _mutate(llm, tokenizer, child)
+
+        pool = [c["prompt"] for c in population] + new_prompts
+        if cosine_sim_to_pool(child, pool, clip_model, clip_processor) >= DIVERSITY_THRESHOLD:
+            print(f"MUT-{flag}-[{i+1:02d}/{n_candidates}] skipped (too similar)")
+            continue
 
         new_prompts.append(child)
         print(f"MUT-{flag}-[{i+1:02d}/{n_candidates}] {child}")

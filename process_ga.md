@@ -38,3 +38,24 @@ Best fitness never improved — stuck at 0.8779 (the OPRO seed) across all 20 it
 The progressive mutation rate made exploration worse, not better. The LLM consistently mutates toward "dramatic/industrial/dark/moody" prompts — harsh spotlights, metallic surfaces, black backgrounds — which are exactly what the fitness function punishes. The target image has warm soft light on a wooden surface, and any deviation from that is penalized. Mutation rate 0.90 by iteration 13 meant almost every candidate was a mutation, and almost every mutation scored 0.60–0.82 vs the crossover candidates scoring 0.86+.
 
 The core problem: the GA was seeded from a converged OPRO population that had already found the optimal region. The LLM's mutation bias (toward dramatic/edgy aesthetics) consistently explores away from what the fitness function rewards. Increasing mutation rate amplified this — more mutations meant more bad candidates and no improvement.
+
+7 - Fixes applied (second round)
+
+Three changes were made simultaneously to address the convergence and mutation bias problems identified in section 6.
+
+Conservative mutation: The mutation prompt was rewritten to change exactly ONE adjective or short descriptor (lighting, texture, colour, or mood word), with everything else remaining word-for-word identical. This directly counters the LLM's bias toward dramatic rewrites — the model can no longer substitute the scene or swap objects, only nudge one descriptor at a time. Temperature kept at 0.9. Progressive mutation rate was removed; rate is fixed at 0.3.
+
+CLIP diversity filter: Before a new candidate is accepted into the generation, its CLIP text embedding is compared against all current population members plus already-accepted new candidates. Any candidate with cosine similarity ≥ 0.85 to the pool is discarded. This prevents the population from collapsing into near-duplicate prompts even when crossover produces structurally similar children.
+
+Rank-based selection (combined with the above): Already introduced in section 5, but now running together with the two fixes above. Each candidate is ranked by fitness and assigned a weight equal to its rank (1 to 20), giving the best candidate 20× more selection pressure than the worst regardless of absolute fitness differences.
+
+8 - Results after second round of fixes (20 iterations)
+
+OPRO seed best: 0.8489. GA best: 0.8659 (iteration 4). For the first time, the GA improved over its seed (+0.017). Mean rose slowly from 0.8371 to 0.8443 across 20 iterations.
+
+Best prompt found (fitness 0.8659):
+"A smooth, dark surface supports a glass filled with frothy orange juice, garnished with a vibrant orange slice and a crystallized sugar cube, surrounded by scattered orange segments and zest, bathed in soft, golden natural light that highlights the inviting, juicy colors and textures of the scene."
+
+New problem: CLIP diversity filter too aggressive. From iteration 5 onward, the filter rejected most candidates — iterations 5, 6, and 7 produced only 1 candidate each, and iteration 8 produced 0. The best was found at iteration 4 and never improved across the remaining 16 iterations. With a converged population, even crossover of different parents produces children that score ≥ 0.85 cosine similarity to the pool, so the filter blocks exploration instead of helping it.
+
+Root cause: threshold 0.85 is too tight once the population has converged. The filter is working as intended (preventing exact duplicates) but is calibrated for a diverse population. With 20 candidates already clustered in the same semantic region, nearly any new child lands inside the rejection zone.

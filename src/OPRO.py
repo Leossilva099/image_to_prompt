@@ -1,11 +1,10 @@
+import random
 import torch
 from PIL import Image
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity as sk_cosine_sim
 from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
 
 DIMENSIONS = ["subject", "lighting", "style", "composition", "mood"]
-DIVERSITY_THRESHOLD = 0.75
+DIVERSITY_THRESHOLD = 0.85
 
 def load_llm(model_id="Qwen/Qwen2.5-VL-7B-Instruct"):
     llm = Qwen2_5_VLForConditionalGeneration.from_pretrained(
@@ -23,25 +22,37 @@ def unload_llm(llm, processor):
     torch.cuda.empty_cache()
 
 
-def cosine_sim_to_pool(prompt, pool_prompts):
+def cosine_sim_to_pool(prompt, pool_prompts, clip_model, clip_processor):
     if not pool_prompts:
         return 0.0
     texts = pool_prompts + [prompt]
-    tfidf = TfidfVectorizer().fit_transform(texts)
-    sims = sk_cosine_sim(tfidf[-1], tfidf[:-1])
-    return float(sims.max())
+    inputs = clip_processor(
+        text=texts,
+        return_tensors="pt",
+        padding=True,
+        truncation=True,
+        max_length=77,
+    ).to(clip_model.device)
+    with torch.no_grad():
+        features = clip_model.get_text_features(**inputs)
+    if not isinstance(features, torch.Tensor):
+        features = features.pooler_output
+    features = torch.nn.functional.normalize(features, dim=-1)
+    sims = (features[-1:] @ features[:-1].T).squeeze(0)
+    return float(sims.max().item())
 
 
-def is_diverse_enough(prompt, population, threshold=DIVERSITY_THRESHOLD):
-    return cosine_sim_to_pool(prompt, [c["prompt"] for c in population]) < threshold
+def is_diverse_enough(prompt, population, clip_model, clip_processor, threshold=DIVERSITY_THRESHOLD):
+    return cosine_sim_to_pool(prompt, [c["prompt"] for c in population], clip_model, clip_processor) < threshold
 
 
 def format_top_k(candidates, top_k=5):
-    top = sorted(candidates, key=lambda x: x["fitness"], reverse=True)[:top_k]
-    return "\n".join(f"Score {c['fitness']:.3f}: {c['prompt'].strip()}" for c in top)
+    weights = [c["fitness"] for c in candidates]
+    selected = random.choices(candidates, weights=weights, k=top_k)
+    return "\n".join(f"Score {c['fitness']:.3f}: {c['prompt'].strip()}" for c in selected)
 
 
-def _generate_one_dimension(image, candidates, llm, processor, dimension, temperature):
+def generate_one_dimension(image, candidates, llm, processor, dimension, temperature):
     top_refs = format_top_k(candidates, top_k=5)
 
     DIMENSION_GUIDE = {
@@ -93,6 +104,7 @@ def _generate_one_dimension(image, candidates, llm, processor, dimension, temper
         return_tensors="pt",
     ).to(llm.device)
 
+    torch.cuda.empty_cache()
     with torch.no_grad():
         generated_ids = llm.generate(
             **inputs,
@@ -117,6 +129,8 @@ def generate_initial_candidates(
     llm,
     processor,
     candidates,
+    clip_model,
+    clip_processor,
     n_candidates=5,
     temperature=0.9,
     max_retries=3,
@@ -126,14 +140,16 @@ def generate_initial_candidates(
     for i in range(n_candidates):
         dimension = DIMENSIONS[i % len(DIMENSIONS)]
         existing = [c["prompt"] for c in candidates] + results
+        diverse = False
         for attempt in range(max_retries):
-            prompt = _generate_one_dimension(image, candidates, llm, processor, dimension, temperature)
-            if cosine_sim_to_pool(prompt, existing) < DIVERSITY_THRESHOLD:
+            prompt = generate_one_dimension(image, candidates, llm, processor, dimension, temperature)
+            if cosine_sim_to_pool(prompt, existing, clip_model, clip_processor) < DIVERSITY_THRESHOLD:
+                diverse = True
                 break
-            if attempt == max_retries - 1:
-                print(f" [{i+1:02d}/{n_candidates}] diversity not achieved after {max_retries} attempts")
+        if not diverse:
+            print(f" [{i+1:02d}/{n_candidates}] skipped (diversity not achieved after {max_retries} attempts)")
+            continue
         results.append(prompt)
-        existing.append(prompt)
         print(f"  [{i+1:02d}/{n_candidates}] {prompt}")
     print(f" {len(results)} generated candidates")
     return results

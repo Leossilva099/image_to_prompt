@@ -1,0 +1,155 @@
+[
+  {
+    "prompt": "A frothy, translucent glass of freshly squeezed orange juice sits amidst vivid halved slices and scattered zest on a warm, wooden surface, bathed in soft, natural light that enhances the vibrant orange hues and rich textures, evoking a sense of freshness and invigorating delight.",
+    "fitness": 0.8501018906856225,
+    "clip": 0.9421970844268799,
+    "lpips": 0.5058873891830444,
+    "rmse": 0.16869455813128506,
+    "iteration": 2
+  },
+  {
+    "prompt": "Photorealistic studio shot, cinematic lighting, rich textures, vibrant orange juice in glass garnished with citrus slices and zest, scattered orange segments on warm wooden surface, ultra-detailed, shallow depth of field, warm ambient glow, high-end product photography.",
+    "fitness": 0.848930308121165,
+    "clip": 0.9324228167533875,
+    "lpips": 0.4785425066947937,
+    "rmse": 0.15507988892712316
+  },
+  {
+    "prompt": "Close-up, centered composition of a glass of orange juice with a citrus twist garnish, surrounded by sliced oranges and scattered zest on a warm wooden surface, soft directional lighting highlights textures and vibrant orange hues, shallow depth of field focuses sharply on the glass while softly blurring background elements.",
+    "fitness": 0.8448352815676781,
+    "clip": 0.9274073243141174,
+    "lpips": 0.4687715172767639,
+    "rmse": 0.1885157035546074
+  },
+  {
+    "prompt": "A close-up, high-resolution studio portrait captures an elegant glass of freshly squeezed orange juice, garnished with slices and zest, bathed in warm, golden light that accentuates its rich, luminous color. The glass sits on a rustic wooden surface adorned with scattered orange segments, evoking a cozy, inviting atmosphere, rendered with meticulous detail and vibrant hues,",
+    "fitness": 0.8432502023194364,
+    "clip": 0.9414146542549133,
+    "lpips": 0.5430064797401428,
+    "rmse": 0.1908194831822314,
+    "iteration": 2
+  },
+  {
+    "prompt": "A glass of creamy, frothy orange juice rests atop a round wooden board, adorned with vibrant halved orange slices and scattered zest on a warm, muted surface under soft, diffused natural light, capturing the crisp texture and vivid orange hues, exuding a sense of fresh vitality and inviting warmth.",
+    "fitness": 0.8416629286942624,
+    "clip": 0.9434174299240112,
+    "lpips": 0.5708214640617371,
+    "rmse": 0.18161973525487987,
+    "iteration": 8
+  },
+  {
+    "prompt": "Warm, inviting, and refreshingly vibrant\u2014crisp orange juice glows in a glass, garnished with citrus slices and zest, surrounded by scattered orange segments and halved oranges on a smooth wooden surface under soft, golden lighting, evoking a cozy, sun-drenched morning stillness.",
+    "fitness": 0.8383544874483094,
+    "clip": 0.9350452423095703,
+    "lpips": 0.5601543188095093,
+    "rmse": 0.1759355874152428
+  },
+  {
+    "prompt": "Close-up, a fresh glass of orange juice, garnished with citrus slices and zest, sits on a wooden surface, bathed in warm, golden light casting soft shadows, highlighting deep orange hues and rich textures, creating a cozy, inviting scene.",
+    "fitness": 0.8378606688672525,
+    "clip": 0.9315133094787598,
+    "lpips": 0.5517666339874268,
+    "rmse": 0.167888061970726,
+    "iteration": 4
+  },
+  {
+    "prompt": "A clear glass of freshly squeezed orange juice is illuminated by warm, diffused light that creates a delicate play of shadows and highlights, enhancing the vibrant orange hue and rich texture of the juice and nearby citrus slices against a neutral, softly lit backdrop.",
+    "fitness": 0.837686023621764,
+    "clip": 0.9338263273239136,
+    "lpips": 0.548610270023346,
+    "rmse": 0.19519794919605601,
+    "iteration": 9
+  },
+  {
+    "prompt": "Warm amber and vibrant orange tones dominate, a glass of fresh orange juice with ice and citrus garnish, surrounded by sliced oranges and zest on a smooth wooden surface, softly lit to evoke a cozy, refreshing, and inviting mood.",
+    "fitness": 0.8367751935156345,
+    "clip": 0.9348064661026001,
+    "lpips": 0.571462094783783,
+    "rmse": 0.17666030006550448
+  },
+  {
+    "prompt": "Bright highlights against deep shadows, a glass of vibrant orange juice garnished with citrus slices and peel, surrounded by scattered orange segments on a warm wooden surface, rich saturation and soft studio lighting.",
+    "fitness": 0.8351227430985353,
+    "clip": 0.9211709499359131,
+    "lpips": 0.5202533006668091,
+    "rmse": 0.17530030577879654
+  },
+  {
+    "prompt": "A striking close-up reveals a glass of frothy, translucent orange juice, delicately garnished with a slice and zest, set against a warm backdrop of halved oranges and scattered segments, all lit by soft, natural light that casts a mesmerizing glow across delicate textures and vibrant, inviting hues.",
+    "fitness": 0.835066015089711,
+    "clip": 0.922742486000061,
+    "lpips": 0.5194559097290039,
+    "rmse": 0.19073945306977633,
+    "iteration": 8
+  },
+  {
+    "prompt": "Photorealistic close-up of a glass filled with vibrant orange juice, garnished with a chunky citrus twist, surrounded by vivid halved orange slices and scattered zest on a softly blurred brown wooden surface, framed to emphasize depth and texture, evoking natural, sunny vibes.",
+    "fitness": 0.834885162393271,
+    "clip": 0.9005993604660034,
+    "lpips": 0.4419276714324951,
+    "rmse": 0.15646072126078273,
+    "iteration": 4
+  },
+  {
+    "prompt": "Warm brown wooden surface with subtle grain, softly lit, surrounding a glass of vibrant orange juice garnished with citrus slices and zest, with scattered orange segments and halved oranges in the background, creating a rich, inviting still life composition.",
+    "fitness": 0.8346015538794862,
+    "clip": 0.9286991953849792,
+    "lpips": 0.549032986164093,
+    "rmse": 0.19456011814567448
+  },
+  {
+    "prompt": "A warm, golden-hued close-up reveals a glass filled with creamy orange juice, garnished with a slice and floating orange pieces, set against a soft, textured surface where bright orange segments and zest create a vibrant halo, bathed in ethereal, natural light that evoke a serene, refreshing moment.",
+    "fitness": 0.8345357507635818,
+    "clip": 0.914263904094696,
+    "lpips": 0.48412835597991943,
+    "rmse": 0.19276861051412106,
+    "iteration": 9
+  },
+  {
+    "prompt": "85mm prime lens, f/2.8, shallow depth of field, low-angle shot. Vibrant orange juice in glass garnished with citrus peel and slices, scattered pulp, warm studio lighting, rich golden tones, hyperrealistic food photography, composition centered on glass, soft shadows, rustic wooden surface.",
+    "fitness": 0.8332817284367933,
+    "clip": 0.9346414804458618,
+    "lpips": 0.5947816371917725,
+    "rmse": 0.18506843721888244
+  },
+  {
+    "prompt": "A close-up, elegant shot frames a frothy, amber-orange glass of juice on a rustic brown surface, garnished with a citrus zest piece and half-fruit slices; scattered pieces of orange zest and halves of the fruit enrich the composition, with shallow focus highlighting the glass against a blurred backdrop, evoking a sense of fresh, vibrant life.",
+    "fitness": 0.8327319417906052,
+    "clip": 0.8920406699180603,
+    "lpips": 0.42711183428764343,
+    "rmse": 0.14557037672603307,
+    "iteration": 5
+  },
+  {
+    "prompt": "A frothy, translucent glass of orange juice is centered, garnished with a slice and zest, set against a warm wooden tray with scattered orange segments and halved oranges. The scene is illuminated with soft, diffused natural light, casting gentle shadows and highlighting the rich orange hue, creating an inviting and vibrant aesthetic.",
+    "fitness": 0.8322482256525607,
+    "clip": 0.9332188367843628,
+    "lpips": 0.5947964787483215,
+    "rmse": 0.18757587129636358,
+    "iteration": 8
+  },
+  {
+    "prompt": "A crystal-clear glass of fresh orange juice sits in center, garnished with a citrus slice and a cube of zest, framed by vibrant halved oranges and scattered segments, under soft, natural light that enhances the rich yellow hue and textures, creating a deep, inviting depth of field that emphasizes the drink's refreshing appeal and artistic perspective.",
+    "fitness": 0.8313736388162198,
+    "clip": 0.9246203303337097,
+    "lpips": 0.554495096206665,
+    "rmse": 0.19599009278010132,
+    "iteration": 8
+  },
+  {
+    "prompt": "A glass of freshly squeezed orange juice, adorned with a slice of orange and a citrus wedge, rests on a smooth brown surface surrounded by halved oranges and scattered zest; natural sunlight streams in from above, casting warm, golden shadows that enhance the vibrant orange hues and rich texture, creating a lively and refreshing ambiance.",
+    "fitness": 0.831325966787883,
+    "clip": 0.9264813661575317,
+    "lpips": 0.5669263005256653,
+    "rmse": 0.19076658915831365,
+    "iteration": 6
+  },
+  {
+    "prompt": "A glass of creamy orange juice stands in sharp focus, its vibrant yellow hue contrasting against the dark wooden surface, surrounded by scattered orange segments and halved slices, bathed in warm, diffused light that creates a cinematic depth of field, emphasizing the drink's texture and inviting freshness.",
+    "fitness": 0.8273322745904077,
+    "clip": 0.9155761003494263,
+    "lpips": 0.5397840142250061,
+    "rmse": 0.202586606734872,
+    "iteration": 3
+  }
+]

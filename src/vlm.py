@@ -15,7 +15,7 @@ def load_vlm(model_id = "Qwen/Qwen3-VL-8B-Instruct"):
     return vlm, processor
 
 
-def _generate_one_candidate(
+def generate_one_candidate(
     image,
     vlm,
     processor,
@@ -146,7 +146,7 @@ def generate_initial_candidates(
     candidates = []
     for i in range(n_candidates):
         hint, dimension = STYLE_HINTS[i % len(STYLE_HINTS)]
-        prompt = _generate_one_candidate(image, vlm, processor, temperature, hint, dimension)
+        prompt = generate_one_candidate(image, vlm, processor, temperature, hint, dimension)
         candidates.append(prompt)
         print(f"  [{i+1:02d}/{n_candidates}] {prompt}")
 

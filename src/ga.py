@@ -130,16 +130,6 @@ def _mutate(llm, tokenizer, prompt, temperature=0.9):
 
 def evolve(llm, tokenizer, population, clip_model, clip_processor,
            n_candidates=5, iteration=1, base_mutation_rate=0.3, temperature=0.9):
-    """
-    One GA generation over a population of dicts with keys: prompt, fitness, clip, lpips, rmse.
-    Returns a list of new prompt strings (length <= n_candidates, filtered by diversity).
-
-    Steps per child:
-      1. Rank-based selection to pick two parents.
-      2. LLM crossover with forced structural diversity.
-      3. Conservative LLM mutation (one word/adjective swap) with fixed rate.
-      4. CLIP-based diversity filter — skip candidates too similar to existing population.
-    """
     new_prompts = []
     for i in range(n_candidates):
         parent_a = _rank_select(population)

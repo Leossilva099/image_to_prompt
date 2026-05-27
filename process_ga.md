@@ -51,11 +51,19 @@ Rank-based selection (combined with the above): Already introduced in section 5,
 
 8 - Results after second round of fixes (20 iterations)
 
-OPRO seed best: 0.8489. GA best: 0.8659 (iteration 4). For the first time, the GA improved over its seed (+0.017). Mean rose slowly from 0.8371 to 0.8443 across 20 iterations.
+OPRO seed best: 0.8489. GA best: 0.8659 (iteration 4). For the first time, the GA improved over its seed (+0.017)(the solution came from crossover). Mean rose slowly from 0.8371 to 0.8443 across 20 iterations.
 
 Best prompt found (fitness 0.8659):
 "A smooth, dark surface supports a glass filled with frothy orange juice, garnished with a vibrant orange slice and a crystallized sugar cube, surrounded by scattered orange segments and zest, bathed in soft, golden natural light that highlights the inviting, juicy colors and textures of the scene."
 
 New problem: CLIP diversity filter too aggressive. From iteration 5 onward, the filter rejected most candidates — iterations 5, 6, and 7 produced only 1 candidate each, and iteration 8 produced 0. The best was found at iteration 4 and never improved across the remaining 16 iterations. With a converged population, even crossover of different parents produces children that score ≥ 0.85 cosine similarity to the pool, so the filter blocks exploration instead of helping it.
 
-Root cause: threshold 0.85 is too tight once the population has converged. The filter is working as intended (preventing exact duplicates) but is calibrated for a diverse population. With 20 candidates already clustered in the same semantic region, nearly any new child lands inside the rejection zone.
+Root cause: threshold 0.85 is too tight once the population has converged. The filter is working as intended (preventing exact duplicates) but is calibrated for a diverse population. With 20 candidates already clustered in the same semantic region, nearly any new child lands inside the rejection zone. Also the mutation is too conservative.
+
+9 - Fixes applied (third round) (-------_______________NOT YET TESTED__-----_____________)
+
+Two targeted changes to address the filter blockage and insufficient mutation step size identified in section 8.
+
+CLIP threshold lowered to 0.80: relaxes the diversity filter so that candidates need only be 80% dissimilar to the pool instead of 85%. This should allow more candidates through per iteration without re-introducing near-duplicate acceptance.
+
+Mutation widened to 1–3 descriptors: the mutation prompt now instructs the LLM to change between 1 and 3 adjectives or short descriptors (lighting, texture, colour, mood), while still forbidding changes to the subject or objects. One-word swaps were too small to escape the converged semantic region; 1–3 gives enough step size to explore without reverting to the unconstrained dramatic rewrites seen in earlier runs.

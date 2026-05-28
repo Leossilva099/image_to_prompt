@@ -46,7 +46,7 @@ def is_diverse_enough(prompt, population, clip_model, clip_processor, threshold=
     return cosine_sim_to_pool(prompt, [c["prompt"] for c in population], clip_model, clip_processor) < threshold
 
 
-def _chat(llm, tokenizer, messages, temperature=0.9, max_new_tokens=72):
+def chat(llm, tokenizer, messages, temperature=0.9, max_new_tokens=72):
     text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     inputs = tokenizer([text], return_tensors="pt").to(llm.device)
     with torch.no_grad():
@@ -60,7 +60,7 @@ def _chat(llm, tokenizer, messages, temperature=0.9, max_new_tokens=72):
     return tokenizer.decode(output_ids, skip_special_tokens=True).strip()
 
 
-def _rank_select(population):
+def rank_select(population):
     ranked = sorted(population, key=lambda x: x["fitness"])
     n = len(ranked)
     weights = list(range(1, n + 1))
@@ -74,7 +74,7 @@ def _rank_select(population):
     return ranked[-1]
 
 
-def _crossover(llm, tokenizer, parent_a, parent_b, temperature=0.9):
+def crossover(llm, tokenizer, parent_a, parent_b, temperature=0.9):
     messages = [
         {
             "role": "system",
@@ -99,10 +99,10 @@ def _crossover(llm, tokenizer, parent_a, parent_b, temperature=0.9):
             ),
         },
     ]
-    return _chat(llm, tokenizer, messages, temperature=temperature)
+    return chat(llm, tokenizer, messages, temperature=temperature)
 
 
-def _mutate(llm, tokenizer, prompt, temperature=0.9):
+def mutate(llm, tokenizer, prompt, temperature=0.9):
     messages = [
         {
             "role": "system",
@@ -125,25 +125,25 @@ def _mutate(llm, tokenizer, prompt, temperature=0.9):
             ),
         },
     ]
-    return _chat(llm, tokenizer, messages, temperature=temperature)
+    return chat(llm, tokenizer, messages, temperature=temperature)
 
 
 def evolve(llm, tokenizer, population, clip_model, clip_processor,
            n_candidates=5, iteration=1, base_mutation_rate=0.3, temperature=0.9):
     new_prompts = []
     for i in range(n_candidates):
-        parent_a = _rank_select(population)
-        parent_b = _rank_select(population)
+        parent_a = rank_select(population)
+        parent_b = rank_select(population)
         retries = 0
         while parent_b["prompt"] == parent_a["prompt"] and len(population) > 1 and retries < 5:
-            parent_b = _rank_select(population)
+            parent_b = rank_select(population)
             retries += 1
 
-        child = _crossover(llm, tokenizer, parent_a, parent_b, temperature)
+        child = crossover(llm, tokenizer, parent_a, parent_b, temperature)
         flag = 0
         if random.random() < base_mutation_rate:
             flag = 1
-            child = _mutate(llm, tokenizer, child)
+            child = mutate(llm, tokenizer, child)
 
         pool = [c["prompt"] for c in population] + new_prompts
         if cosine_sim_to_pool(child, pool, clip_model, clip_processor) >= DIVERSITY_THRESHOLD:

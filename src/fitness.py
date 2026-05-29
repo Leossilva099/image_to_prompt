@@ -54,8 +54,8 @@ def compute_fitness(
     clip_processor,
     lpips_fn,
     device,
-    w_clip = 0.6,
-    w_lpips = 0.3,
+    w_clip = 0.45,
+    w_lpips = 0.45,
     w_rmse = 0.1,
 ):
     

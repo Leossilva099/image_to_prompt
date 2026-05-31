@@ -39,6 +39,10 @@
 
 20 - Roulette wheel selection produced the best OPRO result so far (OPRO_18): best fitness 0.8601 (new absolute maximum), mean 0.8407, bottom 0.8314, range 0.029, improvements across all metrics over OPRO_16.The roulette wheel broke the anchoring on the same top references, confirming this as the root cause of convergence identified in point 6. OPRO_18 (CLIP 0.85 + roulette wheel) is the final OPRO baseline for the GA.
 
+21 - Fitness weight selection: four configurations were tested empirically by running the GA and evaluating the generated images against the target (image 1159, orange juice scene). Configurations tested: 60-30-10, 45-45-10, 40-50-10, and 40-55-05 (CLIP-LPIPS-RMSE). Visual comparison against the target revealed that 40-50-10 produced the closest result: correct glass shape, accurate composition, right number of scattered elements, and correct surface colour. The numeric fitness ranking did not match visual quality, 45-45-10 scored highest (0.8358) but ranked second visually. Two failure patterns were identified: high CLIP weight (60%) forces semantic similarity but loses perceptual structure; low RMSE weight (5%) combined with high LPIPS (55%) produced the worst result, losing compositional accuracy entirely. The search space was fully covered: decreasing CLIP below 40% with LPIPS above 50% and RMSE below 10% was ruled out since 40-55-05 already showed that direction degrades quality. Weights fixed at w_clip=0.40, w_lpips=0.50, w_rmse=0.10.
+
+
+
 
 
 

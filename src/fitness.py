@@ -54,9 +54,9 @@ def compute_fitness(
     clip_processor,
     lpips_fn,
     device,
-    w_clip = 0.45,
-    w_lpips = 0.45,
-    w_rmse = 0.1,
+    w_clip = 0.40,
+    w_lpips = 0.50,
+    w_rmse = 0.10,
 ):
     
     clip_score  = clip_image_similarity(candidate, target, clip_model, clip_processor, device)

@@ -129,7 +129,9 @@ def mutate(llm, tokenizer, prompt, temperature=0.9):
 
 
 def evolve(llm, tokenizer, population, clip_model, clip_processor,
-           n_candidates=5, iteration=1, base_mutation_rate=0.3, temperature=0.9):
+           n_candidates=5, iteration=1, base_mutation_rate=0.3, temperature=0.9,
+           diversity_iterations=5):
+    threshold = DIVERSITY_THRESHOLD if iteration <= diversity_iterations else 1.00
     new_prompts = []
     for i in range(n_candidates):
         parent_a = rank_select(population)
@@ -146,7 +148,7 @@ def evolve(llm, tokenizer, population, clip_model, clip_processor,
             child = mutate(llm, tokenizer, child)
 
         pool = [c["prompt"] for c in population] + new_prompts
-        if cosine_sim_to_pool(child, pool, clip_model, clip_processor) >= DIVERSITY_THRESHOLD:
+        if cosine_sim_to_pool(child, pool, clip_model, clip_processor) >= threshold:
             print(f"MUT-{flag}-[{i+1:02d}/{n_candidates}] skipped (too similar)")
             continue
 

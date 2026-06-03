@@ -1,0 +1,182 @@
+[
+  {
+    "prompt": "A luminous, multi-colored hamster, adorned with spiky fins and intricate rainbow scales, sits serenely amidst a swirling gradient of warm and cool hues, bathed in painterly light, captured in vivid, mesmerizing strokes.",
+    "fitness": 0.7806810376828546,
+    "clip": 0.9089316129684448,
+    "lpips": 0.49941498041152954,
+    "rmse": 0.1955286641772219,
+    "ga_iteration": 48,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_048_02.png"
+  },
+  {
+    "prompt": "A regal multi-colored hamster with luminous eyes and spiky fins sits gracefully amongst a swirling gradient of fiery oranges and vibrant blues, adorned with ornate scales in an impressionist style that captures harmony and enchantment.",
+    "fitness": 0.7736379118058441,
+    "clip": 0.9090986847877502,
+    "lpips": 0.5548425912857056,
+    "rmse": 0.13093416012849432,
+    "ga_iteration": 32,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_032_02.png"
+  },
+  {
+    "prompt": "A radiant, multi-colored hamster with spiky fins, draped in rainbow scales, sits gracefully against a swirling gradient backdrop of warm and cool hues, illuminated by a mystical, painterly light that enhances its enchanting, ethereal appearance, blending harmony and depth into a vivid masterpiece.",
+    "fitness": 0.7641016385436401,
+    "clip": 0.8916895389556885,
+    "lpips": 0.5456729531288147,
+    "rmse": 0.1912969549668561,
+    "ga_iteration": 6,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_006_00.png"
+  },
+  {
+    "prompt": "A magnificent, multi-colored hamster with spiky fins and intricate rainbow scales takes center stage, set against a swirling gradient of warm and cool hues, bathed in mystical painterly light, capturing an ethereal glow and harmonious depth.",
+    "fitness": 0.7609991455971836,
+    "clip": 0.8948609828948975,
+    "lpips": 0.5730022192001343,
+    "rmse": 0.17382951800184693,
+    "ga_iteration": 42,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_042_00.png"
+  },
+  {
+    "prompt": "A luminous, multi-colored hamster with detailed spiky fins and glossy, ornate scales sits amidst a dynamic, fiery and warm gradient of swirling colors, bathed in a mystical light that enhances its regal and enchanting appearance.",
+    "fitness": 0.7592903280929906,
+    "clip": 0.8547951579093933,
+    "lpips": 0.5193457007408142,
+    "rmse": 0.13271787021040865,
+    "ga_iteration": 43,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_043_01.png"
+  },
+  {
+    "prompt": "A radiant multi-colored hamster with luminous eyes and spiky fins stands amidst a swirling gradient of warm and cool hues, adorned with intricate, glossy scales and painted in a painterly style that captures harmony and enchantment.",
+    "fitness": 0.7567708027013907,
+    "clip": 0.8919715881347656,
+    "lpips": 0.5795854926109314,
+    "rmse": 0.1984167223287689,
+    "ga_iteration": 50,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_050_04.png"
+  },
+  {
+    "prompt": "A luminous, multi-colored hamster, adorned with spiky fins and intricate rainbow scales, sits serenely amidst vibrant yellows and blues, bathed in mystical painterly light, capturing an ethereal, enchanting masterpiece with vivid, swirling gradients and a harmonious depth.",
+    "fitness": 0.7566322272089817,
+    "clip": 0.8639341592788696,
+    "lpips": 0.531116247177124,
+    "rmse": 0.18343998171347706,
+    "ga_iteration": 46,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_046_00.png"
+  },
+  {
+    "prompt": "A luminous, multi-colored hamster boasts spiky fins and iridescent scales, seated gracefully under a swirling gradient of vibrant oranges, greens, and cool blues, illuminated by a painterly, mystical light that captures an ethereal glow and depth.",
+    "fitness": 0.7547858757619316,
+    "clip": 0.8878800868988037,
+    "lpips": 0.5976412296295166,
+    "rmse": 0.1537689824035765,
+    "ga_iteration": 49,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_049_00.png"
+  },
+  {
+    "prompt": "A regal, multi-colored hamster adorned with luminous eyes and intricate spiky fin decorations sits serenely amidst vibrant yellows and blues, surrounded by swirling gradients and mystical, painterly light, creating a harmonious, enchanting masterpiece, capturing both elegance and ethereal beauty.",
+    "fitness": 0.7517080984109304,
+    "clip": 0.8791305422782898,
+    "lpips": 0.5835304856300354,
+    "rmse": 0.18615907761951114,
+    "ga_iteration": 40,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_040_04.png"
+  },
+  {
+    "prompt": "A luminous, fantastical creature, a vibrant, multi-colored hamster with iridescent scales and spiky fins, sits regally amidst swirling gradients of warm yellows, oranges, and cool blues, painted within a painterly, ethereal frame that draws attention to its glowing eyes and radiant presence, enhancing the sense of depth and harmony through meticulous",
+    "fitness": 0.7512917900416112,
+    "clip": 0.8785998821258545,
+    "lpips": 0.5934299230575562,
+    "rmse": 0.16193508062392054,
+    "iteration": 2,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/init_000.png"
+  },
+  {
+    "prompt": "A majestic, multi-colored hamster with spiky fins adorned in intricate, glossy scales sits elegantly against a vibrant, swirling gradient background of warm and cool hues, glowing under a mystical painterly light that highlights its ethereal presence and harmonious depth.",
+    "fitness": 0.7510242997605802,
+    "clip": 0.8630326390266418,
+    "lpips": 0.5618783831596375,
+    "rmse": 0.16708058254097352,
+    "ga_iteration": 36,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_036_01.png"
+  },
+  {
+    "prompt": "A majestic, multi-colored hamster adorned with vibrant, cascading scales and small horns stands serenely, bathed in a blend of warm and ethereal lights, surrounded by swirling, luminous flames, capturing an enchanting and mystical ambiance.",
+    "fitness": 0.7507970778986052,
+    "clip": 0.8456357717514038,
+    "lpips": 0.5347954034805298,
+    "rmse": 0.15251922893652972,
+    "ga_iteration": 34,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_034_01.png"
+  },
+  {
+    "prompt": "A radiant, multi-colored hamster, with spiky fins and vibrant rainbow scales, sits serenely amidst a swirling gradient of warm and cool hues, illuminated by painterly light, capturing harmony and depth with vivid, whimsical strokes.",
+    "fitness": 0.7503602375948075,
+    "clip": 0.8849965929985046,
+    "lpips": 0.5872833728790283,
+    "rmse": 0.22913564215521812,
+    "ga_iteration": 50,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_050_03.png"
+  },
+  {
+    "prompt": "A regal, multi-colored hamster with luminous eyes and intricate golden scales adorns itself with ornate spiky fins, set against a swirling gradient of fiery oranges and vibrant blues, painted in an impressionist style that creates a harmonious interplay between the subject and its dynamic, ethereal background.",
+    "fitness": 0.7494103241860284,
+    "clip": 0.8867231607437134,
+    "lpips": 0.6287891268730164,
+    "rmse": 0.1396719105873357,
+    "ga_iteration": 24,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_024_01.png"
+  },
+  {
+    "prompt": "A majestic, multi-colored hamster with spiky fins and iridescent scales, seated serenely amidst vibrant gradients of warm yellows and deep blues, bathed in a mystical, painterly light on a swirling, radiant background, capturing harmony and enchantment, creating a vivid, ethereal masterpiece.",
+    "fitness": 0.7492436930310821,
+    "clip": 0.8846628665924072,
+    "lpips": 0.6061103343963623,
+    "rmse": 0.18952130536110118,
+    "ga_iteration": 23,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_023_01.png"
+  },
+  {
+    "prompt": "A regal hamster with vibrant rainbow scales and shimmering spiky fins sits calmly within swirling radiant flames, bathed in a soft, ethereal light, capturing a fantastical harmony between nature and artistry.",
+    "fitness": 0.7488606770176643,
+    "clip": 0.8511430025100708,
+    "lpips": 0.5494384765625,
+    "rmse": 0.16678046027359839,
+    "ga_iteration": 25,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_025_01.png"
+  },
+  {
+    "prompt": "A majestic hamster, adorned with vibrant rainbow scales and small horns, sits gracefully in an ethereal glow, surrounded by swirling painterly flames of gold, blue, and orange, bathed in warm, radiant light that enhances its mystical aura, set in an impressionistic style with dramatic lighting, creating a dreamlike, ethereal ambiance, all combined with the",
+    "fitness": 0.7482480014948251,
+    "clip": 0.839717447757721,
+    "lpips": 0.530627965927124,
+    "rmse": 0.16689231183589157,
+    "ga_iteration": 5,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_005_02.png"
+  },
+  {
+    "prompt": "A luminous, multi-colored hamster adorned with spiky fins and intricate rainbow scales sits serenely amid a swirling gradient of warm and cool hues, illuminated by painterly light that enhances its mystical, ethereal presence\u2014perfectly capturing the enchanting harmony and vivid beauty desired.",
+    "fitness": 0.7462584164210879,
+    "clip": 0.857248842716217,
+    "lpips": 0.5692406296730042,
+    "rmse": 0.18017173907286668,
+    "ga_iteration": 50,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_050_00.png"
+  },
+  {
+    "prompt": "A majestic rainbow scaly hamster, adorned with intricate spiky adornments, sits amidst swirling iridescent flames, bathed in luminous warmth and painted in expressive brushstrokes and dramatic shadows, evoking a dreamlike and mystical atmosphere.",
+    "fitness": 0.7458315943922784,
+    "clip": 0.8502863645553589,
+    "lpips": 0.567763090133667,
+    "rmse": 0.15218907231100268,
+    "ga_iteration": 41,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/cand_iter_041_03.png"
+  },
+  {
+    "prompt": "A regal golden hamster with iridescent scales painted in hues of orange, teal, and purple, adorned with small horns, sits gracefully amidst swirling, painterly flames of gold and crimson, bathed in a warm, radiant glow that enhances its mystical aura, set in an impressionistic style with dramatic lighting creating a dreamlike, ethereal ambiance.",
+    "fitness": 0.7457095963545827,
+    "clip": 0.854669451713562,
+    "lpips": 0.5805279612541199,
+    "rmse": 0.14296388044558858,
+    "iteration": 2,
+    "image_path": "/content/drive/MyDrive/GENAI_TP2/outputs/GA/images/init_001.png"
+  }
+]

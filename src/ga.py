@@ -1,24 +1,25 @@
 import random
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from PIL import Image
+from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
 
-MODEL_ID = "Qwen/Qwen2.5-7B-Instruct"
+MODEL_ID = "Qwen/Qwen2.5-VL-7B-Instruct"
 DIVERSITY_THRESHOLD = 0.85
 
 
 def load_llm(model_id=MODEL_ID):
-    llm = AutoModelForCausalLM.from_pretrained(
+    llm = Qwen2_5_VLForConditionalGeneration.from_pretrained(
         model_id,
         device_map="auto",
         torch_dtype=torch.bfloat16,
     )
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
+    processor = AutoProcessor.from_pretrained(model_id)
     llm.eval()
-    return llm, tokenizer
+    return llm, processor
 
 
-def unload_llm(llm, tokenizer):
-    del llm, tokenizer
+def unload_llm(llm, processor):
+    del llm, processor
     torch.cuda.empty_cache()
 
 
@@ -46,9 +47,15 @@ def is_diverse_enough(prompt, population, clip_model, clip_processor, threshold=
     return cosine_sim_to_pool(prompt, [c["prompt"] for c in population], clip_model, clip_processor) < threshold
 
 
-def chat(llm, tokenizer, messages, temperature=0.9, max_new_tokens=72):
-    text = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    inputs = tokenizer([text], return_tensors="pt").to(llm.device)
+def vlm_chat(llm, processor, messages, temperature=0.9, max_new_tokens=72):
+    inputs = processor.apply_chat_template(
+        messages,
+        tokenize=True,
+        add_generation_prompt=True,
+        return_dict=True,
+        return_tensors="pt",
+    ).to(llm.device)
+    torch.cuda.empty_cache()
     with torch.no_grad():
         generated_ids = llm.generate(
             **inputs,
@@ -56,8 +63,15 @@ def chat(llm, tokenizer, messages, temperature=0.9, max_new_tokens=72):
             temperature=temperature,
             do_sample=True,
         )
-    output_ids = generated_ids[0][len(inputs.input_ids[0]):].tolist()
-    return tokenizer.decode(output_ids, skip_special_tokens=True).strip()
+    generated_ids_trimmed = [
+        out_ids[len(in_ids):]
+        for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
+    ]
+    return processor.batch_decode(
+        generated_ids_trimmed,
+        skip_special_tokens=True,
+        clean_up_tokenization_spaces=False,
+    )[0].strip()
 
 
 def rank_select(population):
@@ -74,16 +88,21 @@ def rank_select(population):
     return ranked[-1]
 
 
-def crossover(llm, tokenizer, parent_a, parent_b, temperature=0.9):
+def crossover(llm, processor, parent_a, parent_b, target_image_path, temperature=0.9):
+    target_image = Image.open(target_image_path).convert("RGB")
+    img_a = Image.open(parent_a["image_path"]).convert("RGB")
+    img_b = Image.open(parent_b["image_path"]).convert("RGB")
+
     messages = [
         {
             "role": "system",
             "content": (
                 "You are an expert prompt engineer for LCM diffusion models.\n"
-                "You will receive two parent prompts. Combine their strongest visual elements "
-                "into one new prompt.\n\n"
+                "You will receive a target image and two generated images with their prompts.\n"
+                "Your task: write ONE new prompt that takes the strongest visual elements "
+                "from both generated images to better match the target.\n\n"
                 "Rules:\n"
-                " - Cover all visual aspects (subject, lighting, style, composition, mood).\n"
+                " - Cover all visual aspects (subject shape, lighting, style, composition, mood).\n"
                 " - Use a different sentence structure and opening words than both parents.\n"
                 " - Maximum 70 tokens. Every sentence must be complete. **NEVER cut mid-sentence.**\n"
                 " - Output ONLY the prompt text, nothing else."
@@ -91,47 +110,71 @@ def crossover(llm, tokenizer, parent_a, parent_b, temperature=0.9):
         },
         {
             "role": "user",
-            "content": (
-                f"Parent A (fitness {parent_a['fitness']:.3f}):\n{parent_a['prompt'].strip()}\n\n"
-                f"Parent B (fitness {parent_b['fitness']:.3f}):\n{parent_b['prompt'].strip()}\n\n"
-                "Combine the best elements. Different structure and opening than both parents. "
-                "Maximum 70 tokens. End with a complete sentence. Output ONLY the prompt text."
-            ),
+            "content": [
+                {"type": "text", "text": "Target image:"},
+                {"type": "image", "image": target_image},
+                {"type": "text", "text": f"Generated image A (fitness {parent_a['fitness']:.3f}):"},
+                {"type": "image", "image": img_a},
+                {"type": "text", "text": f"Prompt A: {parent_a['prompt'].strip()}"},
+                {"type": "text", "text": f"Generated image B (fitness {parent_b['fitness']:.3f}):"},
+                {"type": "image", "image": img_b},
+                {"type": "text", "text": f"Prompt B: {parent_b['prompt'].strip()}"},
+                {
+                    "type": "text",
+                    "text": (
+                        "Combine the best visual elements from both to match the target. "
+                        "Different structure and opening than both parents. "
+                        "Maximum 70 tokens. End with a complete sentence. Output ONLY the prompt text."
+                    ),
+                },
+            ],
         },
     ]
-    return chat(llm, tokenizer, messages, temperature=temperature)
+    return vlm_chat(llm, processor, messages, temperature=temperature)
 
 
-def mutate(llm, tokenizer, prompt, temperature=0.9):
+def mutate(llm, processor, prompt, reference_image_path, target_image_path, temperature=0.9):
+    target_image = Image.open(target_image_path).convert("RGB")
+    ref_image = Image.open(reference_image_path).convert("RGB")
+
     messages = [
         {
             "role": "system",
             "content": (
                 "You are an expert prompt engineer for LCM diffusion models.\n"
-                "You will receive a prompt. Change exactly ONE adjective or short descriptor "
-                "(a lighting word, texture word, colour word, or mood word) to a different but plausible alternative. "
-                "Everything else must remain word-for-word identical.\n\n"
+                "You will receive a target image, a reference image showing the current visual style, and a prompt.\n"
+                "Identify ONE specific visual gap between the reference and the target "
+                "(e.g. subject shape, composition, where colours appear, pose), "
+                "then make the minimal change to the prompt to address it.\n\n"
                 "Rules:\n"
                 " - Change only ONE word or short phrase.\n"
-                " - Do NOT change the subject, objects, or overall scene.\n"
+                " - The change must address a real, visible gap between reference and target.\n"
                 " - Output ONLY the modified prompt, nothing else."
             ),
         },
         {
             "role": "user",
-            "content": (
-                f"Prompt:\n{prompt.strip()}\n\n"
-                "Change one adjective or descriptor. Output ONLY the modified prompt."
-            ),
+            "content": [
+                {"type": "text", "text": "Target image:"},
+                {"type": "image", "image": target_image},
+                {"type": "text", "text": "Reference image (current style):"},
+                {"type": "image", "image": ref_image},
+                {
+                    "type": "text",
+                    "text": (
+                        f"Prompt:\n{prompt.strip()}\n\n"
+                        "Change one word or short phrase to close the most important visual gap. "
+                        "Output ONLY the modified prompt."
+                    ),
+                },
+            ],
         },
     ]
-    return chat(llm, tokenizer, messages, temperature=temperature)
+    return vlm_chat(llm, processor, messages, temperature=temperature)
 
 
-def evolve(llm, tokenizer, population, clip_model, clip_processor,
-           n_candidates=5, iteration=1, base_mutation_rate=0.3, temperature=0.9,
-           diversity_iterations=5):
-    threshold = DIVERSITY_THRESHOLD if iteration <= diversity_iterations else 1.00
+def evolve(llm, processor, population, clip_model, clip_processor, target_image_path,
+           n_candidates=5, base_mutation_rate=0.3, temperature=0.9, threshold=DIVERSITY_THRESHOLD):
     new_prompts = []
     for i in range(n_candidates):
         parent_a = rank_select(population)
@@ -141,15 +184,15 @@ def evolve(llm, tokenizer, population, clip_model, clip_processor,
             parent_b = rank_select(population)
             retries += 1
 
-        child = crossover(llm, tokenizer, parent_a, parent_b, temperature)
+        child = crossover(llm, processor, parent_a, parent_b, target_image_path, temperature)
         flag = 0
         if random.random() < base_mutation_rate:
             flag = 1
-            child = mutate(llm, tokenizer, child)
+            child = mutate(llm, processor, child, parent_a["image_path"], target_image_path, temperature)
 
         pool = [c["prompt"] for c in population] + new_prompts
         if cosine_sim_to_pool(child, pool, clip_model, clip_processor) >= threshold:
-            print(f"MUT-{flag}-[{i+1:02d}/{n_candidates}] skipped (too similar)")
+            print(f"MUT-{flag}-[{i+1:02d}/{n_candidates}] skipped (too similar, threshold={threshold:.2f})")
             continue
 
         new_prompts.append(child)

@@ -60,10 +60,13 @@ New problem: CLIP diversity filter too aggressive. From iteration 5 onward, the 
 
 Root cause: threshold 0.85 is too tight once the population has converged. The filter is working as intended (preventing exact duplicates) but is calibrated for a diverse population. With 20 candidates already clustered in the same semantic region, nearly any new child lands inside the rejection zone. Also the mutation is too conservative.
 
-9 - Fixes applied (third round) (-------_______________NOT YET TESTED__-----_____________)
+9 - A dynamic diversity threshold was introduced in the GA crossover loop. 
+Instead of a fixed CLIP text embedding threshold of 0.85, the threshold starts 
+at 0.85 and increases linearly to 1.0 over the course of n generations. This 
+enforces broader exploration in early generations when the population needs 
+structural diversity, and gradually tightens the filter in later generations 
+to focus on exploitation of the most promising regions of the prompt space, 
+following the exploration-first-then-exploitation principle.
 
-Two targeted changes to address the filter blockage and insufficient mutation step size identified in section 8.
-
-CLIP threshold lowered to 0.80: relaxes the diversity filter so that candidates need only be 80% dissimilar to the pool instead of 85%. This should allow more candidates through per iteration without re-introducing near-duplicate acceptance.
-
-Mutation widened to 1–3 descriptors: the mutation prompt now instructs the LLM to change between 1 and 3 adjectives or short descriptors (lighting, texture, colour, mood), while still forbidding changes to the subject or objects. One-word swaps were too small to escape the converged semantic region; 1–3 gives enough step size to explore without reverting to the unconstrained dramatic rewrites seen in earlier runs.
+10 - Traditional genetic crossover operates on text alone, blind to the visual quality of each region. This limitation became evident empirically during experimentation with he hedgehog target image, where intermediate candidates showed a clear spatial trade-off some candidates excelled at reproducing the hedgehog in the upper region while failing at the geometric cube base, while others showed the opposite pattern. Inspired by the brain's spatial awareness, its ability to decompose the visual field into regions and process each
+independently, and similarly to how a CNN uses spatial feature maps to localize relevant regions, we propose a Spatial-Aware Genetic Crossover that partitions the generated image into a 2x2 grid, decomposes the global fitness signal into region specific scores, and passes this spatial map to the VLM during crossover, enabling it to identify which spatial regions each parent excels at and generate offspring that spatially recombines the strongest regions of each parent.

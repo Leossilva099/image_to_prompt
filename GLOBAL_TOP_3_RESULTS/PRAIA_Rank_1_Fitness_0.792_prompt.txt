@@ -1,0 +1,10 @@
+Target Image: PRAIA
+Source Pipeline: PRAIA-PIPELINE-INICIAL-50GA
+Source Run: 20260604-130727_run_5_TARGET_1
+Final Fitness: 0.79196
+Final CLIP: 0.93084
+Final LPIPS: 0.50016
+Final RMSE: 0.15840
+
+Prompt:
+A grand, weathered palm stands alone in crystal-clear turquoise waters, its broad fronds silhouetted against a creamy sky at twilight, while rolling waves gently lap around its base, evoking a sense of serene melancholy and timeless romance amidst the backdrop of distant mountains under soft, gossamer clouds.

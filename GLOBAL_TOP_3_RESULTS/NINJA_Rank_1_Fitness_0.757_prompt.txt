@@ -1,0 +1,10 @@
+Target Image: NINJA
+Source Pipeline: NINJA-PIPELINE-INICIAL-50GA
+Source Run: 20260604-151104_run_3_TARGET_2
+Final Fitness: 0.75729
+Final CLIP: 0.84756
+Final LPIPS: 0.50774
+Final RMSE: 0.15413
+
+Prompt:
+A resolute blonde warrior in radiant, futuristic silver armor stands against a misty, gray-fogged backdrop, her spiky hair aglow, wielding golden energy beams as swirling emerald and fiery orange elemental forces surround her, casting deep shadows and creating a profoundly moody anime scene.

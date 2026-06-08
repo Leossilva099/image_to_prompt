@@ -1,0 +1,10 @@
+Target Image: ASTRONAUTA
+Source Pipeline: ASTRONAUTA-PIPELINE-INICIAL-50GA
+Source Run: 20260604-015806_run_5_TARGET_4
+Final Fitness: 0.83672
+Final CLIP: 0.91913
+Final LPIPS: 0.32784
+Final RMSE: 0.08094
+
+Prompt:
+A sweeping panorama showcases an astronaut on Mars, surrounded by a radiant celestial arc and a glowing nebula, creating a serene yet isolating atmosphere.

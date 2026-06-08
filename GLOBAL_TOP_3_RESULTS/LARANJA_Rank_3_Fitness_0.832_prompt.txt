@@ -1,0 +1,10 @@
+Target Image: LARANJA
+Source Pipeline: LARANJA-PIPELINE-INICIAL-50GA
+Source Run: 20260605-200503_run_4_TARGET_0
+Final Fitness: 0.83158
+Final CLIP: 0.93323
+Final LPIPS: 0.35061
+Final RMSE: 0.13521
+
+Prompt:
+A warm wooden surface supports a glass filled with vibrant orange juice, garnished with halved oranges and ginger, surrounded by scattered zest, bathed in soft, directional lighting that creates deep shadows and highlights the juiciness, resulting in a hyperrealistic, richly composed image.

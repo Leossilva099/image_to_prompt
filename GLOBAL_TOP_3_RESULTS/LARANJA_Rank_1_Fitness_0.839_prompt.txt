@@ -1,0 +1,10 @@
+Target Image: LARANJA
+Source Pipeline: LARANJA-PIPELINE-INICIAL-50GA
+Source Run: 20260605-192246_run_2_TARGET_0
+Final Fitness: 0.83911
+Final CLIP: 0.93697
+Final LPIPS: 0.33142
+Final RMSE: 0.12641
+
+Prompt:
+A warm wooden surface supports a full glass of freshly squeezed orange juice, garnished with vibrant citrus slices and zest, where shallow depth of field and soft shadows create rich, hyperrealistic textures and inviting colors, perfectly capturing the essence of a premium food photography still life.

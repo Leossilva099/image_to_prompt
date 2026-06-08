@@ -1,0 +1,10 @@
+Target Image: OURICO
+Source Pipeline: OURICO-PIPELINE-INICIAL-50GA
+Source Run: 20260603-233409_run_1_TARGET_3
+Final Fitness: 0.76988
+Final CLIP: 0.81657
+Final LPIPS: 0.41170
+Final RMSE: 0.12265
+
+Prompt:
+A golden hedgehog with shimmering spines rests on an intricately etched wooden cube, bathed in soft, diffused light that emphasizes the cube’s texture and the hedgehog’s vibrant fur, set against a warm, neutral gray backdrop, capturing a serene and hyperrealistic atmosphere.

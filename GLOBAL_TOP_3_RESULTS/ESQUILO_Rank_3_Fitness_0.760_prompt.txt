@@ -1,0 +1,10 @@
+Target Image: ESQUILO
+Source Pipeline: ESQUILO-PIPELINE-INICIAL-50GA
+Source Run: 20260604-185501_run_2_TARGET_5
+Final Fitness: 0.75972
+Final CLIP: 0.84570
+Final LPIPS: 0.50341
+Final RMSE: 0.12534
+
+Prompt:
+A vibrant, swirling backdrop of fiery red, teal, and deep purple gradients illuminates a whimsical, mystical hamster with iridescent, multicolored scales and a spiky crown, bathed in warm, diffused light that casts subtle, painterly shadows, creating an enchanting, surreal atmosphere.

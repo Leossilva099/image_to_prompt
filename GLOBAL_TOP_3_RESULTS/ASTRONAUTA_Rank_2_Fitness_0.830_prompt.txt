@@ -1,0 +1,10 @@
+Target Image: ASTRONAUTA
+Source Pipeline: ASTRONAUTA-PIPELINE-INICIAL-50GA
+Source Run: 20260604-013642_run_4_TARGET_4
+Final Fitness: 0.82986
+Final CLIP: 0.92531
+Final LPIPS: 0.35807
+Final RMSE: 0.09213
+
+Prompt:
+A lone astronaut stands on a rugged, reddish-brown desert, gazing upward at a vast, glowing blue nebula arching across the sky, bathed in ethereal light that evokes profound wonder and silence.

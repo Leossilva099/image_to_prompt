@@ -1,0 +1,10 @@
+Target Image: NINJA
+Source Pipeline: NINJA-PIPELINE-INICIAL-50GA
+Source Run: 20260604-174848_run_2_TARGET_2
+Final Fitness: 0.74791
+Final CLIP: 0.80850
+Final LPIPS: 0.48275
+Final RMSE: 0.14546
+
+Prompt:
+A determined blonde warrior in radiant armor stands amidst swirling teal mist and roaring crimson and red flames, her glowing sword casting deep shadows and stark contrasts, creating a powerful and dramatic fantasy battle scene.

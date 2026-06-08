@@ -1,0 +1,10 @@
+Target Image: OURICO
+Source Pipeline: OURICO-PIPELINE-INICIAL-50GA
+Source Run: 20260607-160757_run_5_TARGET_3
+Final Fitness: 0.77095
+Final CLIP: 0.83499
+Final LPIPS: 0.44373
+Final RMSE: 0.10337
+
+Prompt:
+A hyperrealistic macro view of a spiky golden hedgehog resting in a cube of finely cut, pale wooden blocks, illuminated by soft natural light that casts warm golden shadows, enhancing the serene and dramatic still life atmosphere.

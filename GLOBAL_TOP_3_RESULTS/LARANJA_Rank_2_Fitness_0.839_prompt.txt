@@ -1,0 +1,10 @@
+Target Image: LARANJA
+Source Pipeline: LARANJA-PIPELINE-INICIAL-50GA
+Source Run: 20260605-194351_run_3_TARGET_0
+Final Fitness: 0.83884
+Final CLIP: 0.94151
+Final LPIPS: 0.33513
+Final RMSE: 0.13979
+
+Prompt:
+A soft, directional light illuminates the vibrant orange juice in a clear glass, speckled with zest and fresh citrus slices, set on a textured wooden background filled with scattered orange segments and halved fruits, captured with a 50mm f/2.8 lens to highlight rich, high-resolution details and a warm, inviting atmosphere.

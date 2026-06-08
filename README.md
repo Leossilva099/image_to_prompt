@@ -1,4 +1,4 @@
-# Image-to-Prompt Project
+# Image-to-Prompt Inversion via LLM-Guided Evolutionary Search
 
 ## Overview
 

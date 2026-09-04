@@ -3,6 +3,10 @@
 
 > João Vaz and Leonardo Silva — Department of Informatics Engineering, University of Coimbra
 
+| Target | Top-1 Recovered (Fitness 0.837) |
+|---|---|
+| ![target](tp2-chosen/7836.png) | ![top-1](GLOBAL_TOP_3_RESULTS/ASTRONAUTA_Rank_1_Fitness_0.837_image.png) |
+
 ---
 
 ## Overview
@@ -39,7 +43,7 @@ Best fitness per target image:
 | Hamster | 0.774 |
 | Warrior | 0.757 |
 
-The full pipeline achieves a mean fitness gain of **+0.065** over the VLM baseline, surpassing it on every target image.
+The full pipeline achieves a mean fitness gain of **+0.065** over the VLM baseline, surpassing it on every target image. More per-image comparisons (top-3 candidates for all 6 targets) are available in `GLOBAL_TOP_3_RESULTS/`.
 
 ---
 

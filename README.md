@@ -3,9 +3,11 @@
 
 > João Vaz and Leonardo Silva — Department of Informatics Engineering, University of Coimbra
 
-| Target | Top-1 Recovered (Fitness 0.837) |
+| Target | Top-1 Recovered |
 |---|---|
+| ![target](tp2-chosen/1159_25.png) | ![top-1](GLOBAL_TOP_3_RESULTS/LARANJA_Rank_1_Fitness_0.839_image.png) |
 | ![target](tp2-chosen/7836.png) | ![top-1](GLOBAL_TOP_3_RESULTS/ASTRONAUTA_Rank_1_Fitness_0.837_image.png) |
+
 
 ---
 
